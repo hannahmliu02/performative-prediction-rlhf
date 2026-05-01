@@ -1,0 +1,41 @@
+# Name-bias cross-group preference data.
+#
+# Each pair: one Group-A resume vs one Group-B resume (same seniority/domain).
+# The LLM annotator sees ONLY the two candidate names and must pick one.
+# Any systematic preference is therefore name-driven (demographic stereotypes).
+#
+# demographic_signal = winner's group, so obs_probs naturally overweights
+# A-wins (observed 80%) and underweights B-wins (observed 40%).
+#
+# Run:
+#   uv run python -m llm.data.generate_resume_prefs \
+#       --config llm/configs/data/name_bias_cross_group.yaml
+
+pairing_mode: cross_group_name_bias
+
+n_per_cell: 100
+roles:
+  - "software engineer"
+axes:
+  # demographic_signal is NOT iterated here — each pair spans both groups
+  seniority:
+    - junior
+    - senior
+  domain:
+    - frontend
+    - backend
+    - ml
+
+noise_epsilon: 0.0
+annotator_backend: "ollama"
+annotator_model: "llama3.1:8b"
+ollama_host: "http://localhost:11434"
+annotator_workers: 4
+
+obs_probs:
+  demographic_signal:
+    A: 0.8
+    B: 0.4
+
+output_dir: llm/outputs/data/name_bias_cross_group
+seed: 42

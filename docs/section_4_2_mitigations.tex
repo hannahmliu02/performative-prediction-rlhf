@@ -1,0 +1,199 @@
+% Section 4.2 — Mitigation Methods
+% Paste under \subsection{Mitigation Methods} inside Section 4.
+
+\subsection{Mitigation Methods}
+\label{sec:mitigations}
+
+We evaluate four published mitigation strategies alongside our own method.
+All baselines operate \emph{downstream} of the preference data — either at the
+reward-model training stage or the policy-optimization stage — and are therefore
+blind to the missingness structure $\psi(a)$ that generates the bias.
+Our method intervenes \emph{upstream}, at the preference-data stage, before
+the reward model ever sees the data.
+We deliberately tune each baseline to minimize round-one disparity (see
+\S\ref{sec:tuning}), giving each the strongest possible chance of breaking the
+amplification loop.
+
+%% ─────────────────────────────────────────────────────────────────────────── %%
+\paragraph{Baseline 1: Length normalization.}
+Long responses tend to receive higher reward-model scores independent of
+quality~\citep{singhal2023longisbet, park2024disentangling}, and groups whose
+training pairs are disproportionately short may therefore receive systematically
+lower scores.
+Length normalization subtracts a length penalty from the Bradley--Terry
+objective at training time.
+For a preference pair $(x, y_w, y_l)$ the corrected reward is
+
+\begin{equation}
+    \tilde{r}(x, y) \;=\; r_\theta(x, y) \;-\; \beta \log |y|,
+\label{eq:length_norm}
+\end{equation}
+
+where $|y|$ is the token count of response $y$ and $\beta > 0$ is a
+hyperparameter.
+We sweep $\beta \in \{0.01, 0.1, 1.0\}$ and select the value that minimizes
+round-one disparity on a held-out validation set.
+Length normalization is also applied inside the DPO objective by normalizing
+per-token log-probabilities by sequence length before summing.
+
+\emph{Why it is insufficient.}
+The bias in our setting arises from the \emph{coverage} of demographic groups
+in the training set, not from a systematic response-length difference between
+groups.
+Because Group~A and Group~B resumes are sampled from the same quality and
+length distributions, length normalization has no mechanism to address the
+underlying missingness gap and is expected to leave the amplification ratio
+$\mathrm{AR}(r)$ unchanged after round one.
+
+%% ─────────────────────────────────────────────────────────────────────────── %%
+\paragraph{Baseline 2: Reward-model regularization.}
+We regularize the reward head via two complementary penalties added to the
+Bradley--Terry loss:
+
+\begin{equation}
+    \mathcal{L}_{\mathrm{reg}} \;=\;
+    \mathcal{L}_{\mathrm{BT}}
+    \;+\; \lambda_{\ell_2} \lVert W_r \rVert_F^2
+    \;+\; \lambda_{\mathrm{cons}} \cdot
+    \frac{1}{|G|}\sum_{g \in G} \operatorname{Var}_{(x,y)\sim\mathcal{D}_g}
+    \bigl[r_\theta(x,y)\bigr],
+\label{eq:rm_reg}
+\end{equation}
+
+where $W_r$ is the reward head weight matrix, $G = \{A, B\}$ denotes the
+demographic groups, $\mathcal{D}_g$ is the subset of training pairs whose
+chosen response belongs to group $g$, and $\operatorname{Var}[\cdot]$ is
+estimated within each mini-batch.
+The first term is a standard Frobenius-norm penalty (separate from the AdamW
+weight decay, which applies to all parameters).
+The second is a \emph{logit-consistency} term that discourages the reward head
+from assigning high-variance scores within demographic strata, reducing the
+signal-to-noise ratio of any spurious demographic shortcut.
+We sweep $(\lambda_{\ell_2}, \lambda_{\mathrm{cons}}) \in \{10^{-4}, 10^{-3}\}^2$
+and select the best round-one configuration.
+
+\emph{Why it is insufficient.}
+Regularization constrains the RM's capacity but does not change the
+\emph{composition} of the training set.
+After the RM has been trained on predominantly Group-A pairs, even a heavily
+regularized head will have seen fewer Group-B examples per cell and will
+therefore produce lower-confidence, less-calibrated scores for Group-B.
+The loop re-uses these scores to generate round-$(r{+}1)$ preferences, so the
+coverage gap compounds across rounds regardless of the regularization
+applied in a single round.
+
+%% ─────────────────────────────────────────────────────────────────────────── %%
+\paragraph{Baseline 3: KL-constrained policy optimization.}
+A standard remedy for reward overoptimization is to constrain how far the
+policy $\pi_\theta$ may drift from the reference policy $\pi_{\mathrm{ref}}$:
+
+\begin{equation}
+    \max_{\pi_\theta}\;
+    \mathbb{E}_{x \sim \mathcal{D},\, y \sim \pi_\theta(\cdot|x)}
+    \bigl[r_\theta(x, y)\bigr]
+    \;-\;
+    \gamma \, \mathrm{KL}\!\bigl(\pi_\theta(\cdot|x) \,\|\, \pi_{\mathrm{ref}}(\cdot|x)\bigr).
+\label{eq:kl_ppo}
+\end{equation}
+
+We implement this via RLOO~\citep{kool2019buy}, TRL's KL-constrained
+online RL trainer, with $\gamma \in \{10^{-4}, 10^{-3}, 10^{-2}\}$
+following~\citet{wolf2024tradeoffs}.
+A larger $\gamma$ prevents the policy from exploiting reward artifacts but
+also slows learning of genuine quality improvements.
+
+\emph{Why it is insufficient.}
+The KL constraint operates on the policy, not on the reward model or the
+preference data.
+The RM that scores policy outputs in each round is itself trained on a biased
+sample; constraining how much the policy moves toward that biased RM's signal
+reduces the \emph{rate} of bias amplification but does not reverse it.
+As shown in \S\ref{sec:results}, $\mathrm{AR}(r)$ remains above 1.0 for all
+values of $\gamma$ by round 5.
+
+%% ─────────────────────────────────────────────────────────────────────────── %%
+\paragraph{Baseline 4: Safe-RLHF fairness penalty.}
+Safe-RLHF~\citep{dai2023safe} augments the reward with a safety signal that
+penalizes high-cost behavior.
+We adapt this framework to demographic fairness by replacing the safety cost
+with the within-batch demographic parity gap:
+
+\begin{equation}
+    \tilde{r}_{\mathrm{safe}}(x, y) \;=\;
+    r_\theta(x, y)
+    \;-\;
+    \lambda_{\mathrm{safe}} \cdot
+    \max\!\Bigl(0,\;
+    \overline{r}_A^{\,\mathrm{batch}} - \overline{r}_B^{\,\mathrm{batch}}
+    \Bigr),
+\label{eq:safe_rlhf}
+\end{equation}
+
+where $\overline{r}_g^{\,\mathrm{batch}}$ is the mean reward for group $g$ in
+the current mini-batch, estimated from the demographic metadata attached to each
+preference pair.
+We sweep $\lambda_{\mathrm{safe}} \in \{0.1, 0.5, 1.0\}$.
+
+\emph{Why it is insufficient.}
+Equation~\eqref{eq:safe_rlhf} penalizes the policy for outputs that the
+\emph{current-round RM} scores unequally across groups.
+However, if the RM is already biased — because it was trained on a coverage-
+unbalanced dataset — its scores are themselves a biased proxy for true quality.
+Penalizing the policy based on a biased scorer is analogous to correcting a
+thermometer reading with the same thermometer: the disparity signal the penalty
+acts on is corrupted by the very bias we wish to remove.
+
+%% ─────────────────────────────────────────────────────────────────────────── %%
+\paragraph{Our method: Inverse propensity weighting (DPO$^+$).}
+All four baselines share a common failure mode: they intervene \emph{after} the
+biased preference data has been used to train the RM.
+Our method instead reweights the preference pairs \emph{before} RM training,
+blocking the backdoor path from demographic group $a$ through
+missingness $m$ to RM score.
+
+Recall from \S\ref{sec:setup} that pair $(x, y_w, y_l)$ is observed in the
+training set with probability $\psi(a) = P(m{=}1 \mid a)$, where $a$ is the
+demographic group of the candidate.
+We estimate $\hat\psi(a)$ via a propensity model (oracle in the synthetic
+setting; a logistic-regression classifier on prompt features in the real-world
+setting) and reweight the Bradley--Terry loss:
+
+\begin{equation}
+    \mathcal{L}_{\mathrm{IPW}}(\theta) \;=\;
+    -\sum_{i=1}^{N}
+    \frac{1}{\hat\psi(a_i)}
+    \log \sigma\!\bigl(r_\theta(x_i, y_i^w) - r_\theta(x_i, y_i^l)\bigr),
+\label{eq:ipw}
+\end{equation}
+
+with propensities clipped to $[\varepsilon, 1{-}\varepsilon]$,
+$\varepsilon = 0.05$, to prevent numerical blow-up.
+Pairs from under-observed groups (low $\hat\psi$) receive higher weight,
+compensating for their lower representation in the training set.
+The same weights are passed to the DPO trainer when using the DPO policy
+objective, yielding the \emph{DPO$^+$} variant reported in the headline results.
+
+Critically, because the reweighting occurs at the data stage, every downstream
+component — the RM, the DPO/PPO optimizer, and the preference-pair generator
+in round $r{+}1$ — operates on an effectively unbiased signal from round one
+onward.
+This is the key structural difference from the baselines: rather than patching
+the output of a biased RM, DPO$^+$ prevents the bias from entering the RM in
+the first place.
+
+\paragraph{Annealed correction.}
+Across rounds, we anneal the correction strength following
+\citet{kim2025cpm}:
+
+\begin{equation}
+    \alpha_r \;=\; \min\!\bigl(\alpha_0 + \Delta\alpha \cdot r,\; 1.0\bigr),
+    \quad \alpha_0 = 0.4,\; \Delta\alpha = 0.12,
+\label{eq:anneal}
+\end{equation}
+
+where $\alpha_r$ scales the IPW weights at round $r$.
+The intuition is that early rounds have limited data and high variance in
+propensity estimates; a smaller correction prevents overcorrection before the
+propensity model has seen enough data to be reliable.
+By round 5 the correction is near its maximum, matching the asymptotic regime
+where the mechanism analysis in \S\ref{sec:theory} applies.

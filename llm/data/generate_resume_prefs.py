@@ -17,6 +17,7 @@ from omegaconf import DictConfig, OmegaConf
 
 from llm.data.llm_annotator import (
     build_llm_client,
+    compare_candidates_by_name,
     compute_annotator_bias,
     generate_candidate_summary,
     generate_mediocre_summary,
@@ -230,13 +231,177 @@ def generate_pairs(cfg: DictConfig) -> tuple[list[dict], list[dict]]:
 
 
 # --------------------------------------------------------------------------- #
+# Cross-group name-bias generation
+# --------------------------------------------------------------------------- #
+
+
+def generate_cross_group_name_bias_pairs(cfg: DictConfig) -> tuple[list[dict], list[dict]]:
+    """Generate preference pairs where the LLM chooses based on candidate names only.
+
+    Each pair contains one Group-A resume and one Group-B resume with the same
+    seniority / domain.  The LLM is shown only the two names and must pick one;
+    any systematic preference is therefore driven by name-based priors (demographic
+    stereotypes), not content quality.
+
+    ``demographic_signal`` is set to the *winner's* group so that ``obs_probs``
+    naturally overweights A-wins (p_obs=0.8) and underweights B-wins (p_obs=0.4).
+    This models a world where Group-A candidate outcomes are observed / acted upon
+    more often than Group-B outcomes — the informative-missingness mechanism.
+    """
+    rng = random.Random(cfg.seed)
+    axes: dict[str, list[str]] = OmegaConf.to_container(cfg.axes, resolve=True)  # type: ignore[assignment]
+    obs_probs: dict[str, float] = OmegaConf.to_container(cfg.obs_probs.demographic_signal, resolve=True)  # type: ignore[assignment]
+
+    # Iterate over axes that are NOT demographic_signal (each pair spans both groups)
+    non_demo_axes = {k: v for k, v in axes.items() if k != "demographic_signal"}
+    cells = enumerate_cells(non_demo_axes)
+    roles: list[str] = list(cfg.roles)
+
+    llm_client, annotator_model = build_llm_client(
+        backend=cfg.get("annotator_backend", "anthropic"),
+        model=cfg.get("annotator_model"),
+        ollama_host=cfg.get("ollama_host", "http://localhost:11434"),
+    )
+    n_workers = int(cfg.get("annotator_workers", 4))
+    log.info(
+        "Cross-group name-bias generation",
+        model=annotator_model,
+        n_cells=len(cells),
+        workers=n_workers,
+    )
+
+    # ── Phase 1: build paired resume skeletons ────────────────────────────────
+    skeletons: list[dict] = []
+    for cell in cells:
+        for role in roles:
+            for _ in range(cfg.n_per_cell):
+                resume_a = build_resume(
+                    demographic_signal="A",
+                    seniority=cell["seniority"],
+                    domain=cell["domain"],
+                    rng=rng,
+                )
+                resume_b = build_resume(
+                    demographic_signal="B",
+                    seniority=cell["seniority"],
+                    domain=cell["domain"],
+                    rng=rng,
+                )
+                skeletons.append({
+                    "resume_a": resume_a,
+                    "resume_b": resume_b,
+                    "role": role,
+                    "cell": cell,
+                    "obs_flip": rng.random(),
+                })
+
+    total = len(skeletons)
+
+    # ── Phase 2: annotate pairs (parallel) ───────────────────────────────────
+    def _annotate(sk: dict) -> dict:
+        resume_a: Resume = sk["resume_a"]
+        resume_b: Resume = sk["resume_b"]
+        role: str = sk["role"]
+
+        # Name-only preference judgment — the LLM can only use the name
+        winner = compare_candidates_by_name(
+            resume_a.name, resume_b.name, role, llm_client, model=annotator_model
+        )
+
+        # Generate full summaries for the RM to train on (content-level signal)
+        summary_a = generate_candidate_summary(resume_a, role, llm_client, model=annotator_model)
+        summary_b = generate_candidate_summary(resume_b, role, llm_client, model=annotator_model)
+
+        quality_a = compute_quality(resume_a)
+        quality_b = compute_quality(resume_b)
+
+        if winner == "A":
+            chosen, rejected = summary_a, summary_b
+            chosen_name, rejected_name = resume_a.name, resume_b.name
+            quality_chosen, quality_rejected = quality_a, quality_b
+            demo_winner = "A"
+        else:
+            chosen, rejected = summary_b, summary_a
+            chosen_name, rejected_name = resume_b.name, resume_a.name
+            quality_chosen, quality_rejected = quality_b, quality_a
+            demo_winner = "B"
+
+        p_obs = obs_probs.get(demo_winner, 0.5)
+        chosen_is_good = quality_chosen >= quality_rejected
+
+        return {
+            # Standard RM training columns
+            "prompt": (
+                f"For a {role} position, review two candidate profiles "
+                f"and select the stronger candidate."
+            ),
+            "chosen": chosen,
+            "rejected": rejected,
+            # Schema-compatible metadata (demographic_signal = winner's group)
+            "demographic_signal": demo_winner,
+            "seniority": sk["cell"]["seniority"],
+            "domain": sk["cell"]["domain"],
+            "role": role,
+            "quality_score": quality_chosen,
+            # Extras for analysis (ignored by downstream training code)
+            "quality_score_rejected": quality_rejected,
+            "chosen_is_good": chosen_is_good,
+            "chosen_name": chosen_name,
+            "rejected_name": rejected_name,
+            "llm_winner": winner,
+            "summary_specificity": score_summary_specificity(chosen, resume_a if winner == "A" else resume_b),
+            "p_obs": p_obs,
+            "obs_flip": sk["obs_flip"],
+        }
+
+    annotated: list[dict] = [{}] * total
+    with ThreadPoolExecutor(max_workers=n_workers) as pool:
+        futures = {pool.submit(_annotate, sk): i for i, sk in enumerate(skeletons)}
+        n_done = 0
+        for fut in as_completed(futures):
+            idx = futures[fut]
+            annotated[idx] = fut.result()
+            n_done += 1
+            if n_done % 50 == 0:
+                log.info("Name-bias generation progress", done=n_done, total=total)
+
+    # ── Phase 3: split audit / train ─────────────────────────────────────────
+    audit_rows: list[dict] = []
+    train_rows: list[dict] = []
+    for row in annotated:
+        p_obs = row.pop("p_obs")
+        obs_flip = row.pop("obs_flip")
+        audit_rows.append(row)
+        if obs_flip < p_obs:
+            train_rows.append(row)
+
+    # Log bias diagnostic
+    a_wins = sum(1 for r in audit_rows if r["demographic_signal"] == "A")
+    b_wins = sum(1 for r in audit_rows if r["demographic_signal"] == "B")
+    total_audit = len(audit_rows)
+    log.info(
+        "Name-bias annotation diagnostic",
+        A_wins=a_wins,
+        B_wins=b_wins,
+        A_win_rate=f"{a_wins / total_audit:.3f}" if total_audit else "N/A",
+        chosen_is_good_rate=f"{sum(r['chosen_is_good'] for r in audit_rows) / total_audit:.3f}" if total_audit else "N/A",
+    )
+
+    return train_rows, audit_rows
+
+
+# --------------------------------------------------------------------------- #
 # Entry point
 # --------------------------------------------------------------------------- #
 
 
 def run(cfg: DictConfig) -> tuple[datasets.Dataset, datasets.Dataset]:
     log.info("Starting data generation", n_per_cell=cfg.n_per_cell, seed=cfg.seed)
-    train_rows, audit_rows = generate_pairs(cfg)
+    pairing_mode = cfg.get("pairing_mode", "standard")
+    if pairing_mode == "cross_group_name_bias":
+        train_rows, audit_rows = generate_cross_group_name_bias_pairs(cfg)
+    else:
+        train_rows, audit_rows = generate_pairs(cfg)
 
     preference_train = datasets.Dataset.from_list(train_rows)
     preference_audit = datasets.Dataset.from_list(audit_rows)

@@ -1,0 +1,23 @@
+# Real-world evaluation — Anthropic HH-RLHF with topic-based demographic proxy.
+#
+# Group A = technical prompts (coding, math, science) — naturally higher coverage.
+# Group B = personal/emotional prompts (relationships, mental health) — lower coverage.
+#
+# obs_probs adds additional synthetic subsampling on top of the natural gap
+# to amplify the signal for the feedback-loop experiment.
+#
+# Run:
+#   uv run python -m llm.data.load_real_world \
+#       --config llm/configs/data/real_world_hh_rlhf.yaml
+
+hh_split: "train"
+max_rows: 20000        # set null to use full dataset (~160K rows)
+min_response_len: 30
+
+obs_probs:
+  demographic_signal:
+    A: 0.8
+    B: 0.4
+
+output_dir: llm/outputs/data/real_world_hh_rlhf
+seed: 42

@@ -24,7 +24,7 @@ mitigation:
   beta: 0.1    # score -= 0.1 * log(seq_len) before BT loss
 
 # RM training (per round)
-rm_max_steps: 200
+rm_max_steps: 50
 rm_lr: 1.0e-5
 rm_batch_size: 4
 rm_eval_fraction: 0.1

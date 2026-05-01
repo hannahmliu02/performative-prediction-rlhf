@@ -26,7 +26,7 @@ mitigation:
   consistency_lambda: 0.0
 
 # RM training (per round)
-rm_max_steps: 200
+rm_max_steps: 50
 rm_lr: 1.0e-5
 rm_batch_size: 4
 rm_eval_fraction: 0.1

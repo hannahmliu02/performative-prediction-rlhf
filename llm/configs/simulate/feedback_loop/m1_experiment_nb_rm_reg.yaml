@@ -1,31 +1,24 @@
-# Quality-tier baseline — no mitigation, quality-tiered rejected responses.
-# Run AFTER generating data with llm_annotated_quality_tiers.yaml.
-#
-# Difference from m1_experiment.yaml:
-#   train_data / held_out_data point to llm_annotated_quality_tiers/
-#   experiment_name uses _qt suffix to keep outputs separate
+# Name-bias RM-regularisation baseline.
 
-experiment_name: m1_experiment_qt
+experiment_name: m1_experiment_nb_rm_reg
 num_rounds: 5
 policy_method: dpo
-method: no_mitigation
+method: rm_reg
 
 sft_checkpoint: gpt2
 
-train_data: llm/outputs/data/llm_annotated_quality_tiers/train.parquet
-held_out_data: llm/outputs/data/llm_annotated_quality_tiers/audit.parquet
+train_data: llm/outputs/data/name_bias_cross_group/train.parquet
+held_out_data: llm/outputs/data/name_bias_cross_group/audit.parquet
 
 obs_probs:
   A: 0.8
   B: 0.4
 
-# RM training (per round)
 rm_max_steps: 50
 rm_lr: 1.0e-5
 rm_batch_size: 4
 rm_eval_fraction: 0.1
 
-# Policy training (per round)
 policy_max_steps: 200
 policy_lr: 5.0e-6
 policy_batch_size: 1
@@ -33,7 +26,6 @@ gradient_accumulation_steps: 4
 policy_beta: 0.1
 gradient_checkpointing: true
 
-# Generation
 max_new_tokens: 32
 generation_batch_size: 16
 generation_n_prompts: 64
