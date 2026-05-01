@@ -1,0 +1,49 @@
+# Smoke test: 2 rounds, max_steps=2 (RM and policy), CPU, float32.
+# Verifies the full loop runs without errors; accuracy trends are meaningless.
+experiment_name: feedback_loop_smoke
+num_rounds: 2
+policy_method: dpo  # dpo or ppo
+method: no_mitigation  # label written to per_round_metrics.csv
+
+# Base model (SFT checkpoint from Task 4 smoke run)
+sft_checkpoint: llm/outputs/checkpoints/sft/sft_smoke
+
+# Data
+train_data: llm/outputs/data/semi_synthetic/train.parquet
+held_out_data: llm/outputs/data/semi_synthetic/audit.parquet
+
+# Missingness (must match data generation config)
+obs_probs:
+  A: 0.8
+  B: 0.4
+
+# RM training (per round)
+rm_max_steps: 2
+rm_lr: 1.0e-5
+rm_batch_size: 2
+rm_eval_fraction: 0.1
+
+# Policy training (per round)
+policy_max_steps: 2
+policy_lr: 5.0e-6
+policy_batch_size: 2
+policy_beta: 0.1
+
+# Generation (for new preference pairs)
+max_new_tokens: 30
+generation_batch_size: 4
+entropy_n_prompts: 8  # prompts sampled for policy entropy estimate (smoke: keep small)
+
+# Common
+dtype: float32
+device_map: null
+max_length: 128
+report_to: "none"
+wandb_project: bias-llm
+seed: 123
+
+# Per-round optional evals (disabled in smoke for speed)
+run_dt_per_round: false
+run_gc_per_round: false
+
+output_dir: llm/outputs/simulate

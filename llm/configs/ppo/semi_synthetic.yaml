@@ -1,0 +1,23 @@
+experiment_name: ppo_semi_synthetic
+sft_checkpoint: llm/outputs/checkpoints/sft/semi_synthetic_sft
+rm_checkpoint: llm/outputs/checkpoints/rm/rm_semi_synthetic_biased
+data_path: llm/outputs/data/semi_synthetic/train.parquet
+model_name_or_path: gpt2-medium  # for dtype/device_map reference
+dtype: bfloat16
+device_map: auto
+max_length: 512
+max_completion_length: 128
+num_train_epochs: 1
+max_steps: -1
+per_device_train_batch_size: 4
+gradient_accumulation_steps: 2
+learning_rate: 1.0e-5
+warmup_steps: 10
+num_generations: 4
+temperature: 0.7
+kl_beta: 0.05
+length_norm_beta: 0.0  # set > 0 to enable length normalization (S1-Task 2)
+report_to: wandb
+wandb_project: bias-llm
+seed: 123
+output_dir: llm/outputs/checkpoints/ppo

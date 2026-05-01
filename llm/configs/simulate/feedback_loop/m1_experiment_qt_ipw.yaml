@@ -1,0 +1,63 @@
+# Quality-tier IPW experiment — IPW mitigation, quality-tiered rejected responses.
+# Run AFTER m1_experiment_qt (no-mitigation baseline) for comparison.
+#
+# Differences from m1_experiment_qt.yaml:
+#   - method: ours_ipw
+#   - mitigation block added
+
+experiment_name: m1_experiment_qt_ipw
+num_rounds: 5
+policy_method: dpo
+method: ours_ipw
+
+sft_checkpoint: gpt2
+
+train_data: llm/outputs/data/llm_annotated_quality_tiers/train.parquet
+held_out_data: llm/outputs/data/llm_annotated_quality_tiers/audit.parquet
+
+obs_probs:
+  A: 0.8
+  B: 0.4
+
+mitigation:
+  type: ipw_counterfactual
+  propensity_variant: oracle
+  obs_probs:
+    A: 0.8
+    B: 0.4
+  clip_eps: 0.05
+
+# RM training (per round)
+rm_max_steps: 200
+rm_lr: 1.0e-5
+rm_batch_size: 4
+rm_eval_fraction: 0.1
+
+# Policy training (per round)
+policy_max_steps: 200
+policy_lr: 5.0e-6
+policy_batch_size: 1
+gradient_accumulation_steps: 4
+policy_beta: 0.1
+gradient_checkpointing: true
+
+# Generation
+max_new_tokens: 32
+generation_batch_size: 16
+generation_n_prompts: 64
+entropy_n_prompts: 0
+
+dtype: float32
+policy_dtype: float16
+device_map: null
+max_length: 256
+dpo_max_length: 128
+
+report_to: "none"
+wandb_project: bias-llm
+seed: 42
+
+run_dt_per_round: false
+run_gc_per_round: false
+
+output_dir: llm/outputs/simulate

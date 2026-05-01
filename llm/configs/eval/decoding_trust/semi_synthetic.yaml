@@ -1,0 +1,14 @@
+# Full eval on the production SFT checkpoint.
+# Loads prompt data from AI-secure/DecodingTrust on HuggingFace.
+experiment_name: dt_semi_synthetic
+model_checkpoint: llm/outputs/checkpoints/sft/semi_synthetic_sft
+subsets:
+  - stereotype
+  - fairness
+max_samples_per_subset: 100
+max_new_tokens: 50
+batch_size: 16
+dtype: bfloat16
+device_map: auto
+seed: 42
+output_dir: llm/outputs/eval

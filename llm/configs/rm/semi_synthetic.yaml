@@ -1,0 +1,19 @@
+# Train RM on the biased preference_train dataset.
+experiment_name: rm_semi_synthetic_biased
+model_name_or_path: gpt2-medium
+dtype: bfloat16
+device_map: auto
+data_path: llm/outputs/data/semi_synthetic/train.parquet
+max_length: 512
+num_train_epochs: 3
+max_steps: -1
+per_device_train_batch_size: 4
+per_device_eval_batch_size: 8
+gradient_accumulation_steps: 2
+learning_rate: 1.0e-5
+warmup_ratio: 0.1
+eval_fraction: 0.1
+report_to: wandb
+wandb_project: bias-llm
+seed: 123
+output_dir: llm/outputs/checkpoints/rm

@@ -1,0 +1,5 @@
+# KL-constrained PPO (RLOO) mitigation.
+# kl_beta: KL coefficient in RLOOConfig.beta.
+# Sweep: {1e-4, 1e-3, 1e-2}; Wolf et al. (2505.18126) used 1e-4 as default.
+type: kl_constrained
+kl_beta: 1.0e-3

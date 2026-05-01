@@ -1,0 +1,29 @@
+# End-to-end semi-synthetic pipeline smoke test.
+# References per-stage smoke configs; runs all steps on CPU with gpt2 / max_steps=2.
+# GPU run: swap sub-configs for their semi_synthetic counterparts and expect < 30 min.
+#
+# Usage:
+#   make smoke                                      # full pipeline
+#   uv run python -m llm.scripts.run_semi_synthetic --config llm/configs/semi_synthetic_smoke.yaml
+
+# Per-stage sub-configs
+data_config: llm/configs/data/semi_synthetic.yaml
+sft_config: llm/configs/sft/smoke.yaml
+rm_config: llm/configs/rm/smoke.yaml
+policy_method: dpo    # dpo or ppo
+dpo_config: llm/configs/dpo/smoke.yaml
+ppo_config: llm/configs/ppo/smoke.yaml
+audit_config: llm/configs/audit/ci_smoke.yaml
+dt_config: llm/configs/eval/decoding_trust/smoke.yaml
+gc_config: llm/configs/eval/general_capability/smoke.yaml
+
+# Steps to execute (set false to skip)
+run_data: true
+run_sft: true
+run_rm: true
+run_policy: true
+run_audit: true
+run_decoding_trust: true
+run_general_capability: true
+
+output_summary: llm/outputs/smoke/summary.json

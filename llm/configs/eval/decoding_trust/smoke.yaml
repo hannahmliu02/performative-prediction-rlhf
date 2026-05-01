@@ -1,0 +1,14 @@
+# Smoke test: sft_smoke checkpoint (gpt2, 2 steps), CPU, 10 samples per subset.
+# Uses fallback prompts if AI-secure/DecodingTrust is unavailable offline.
+experiment_name: dt_smoke
+model_checkpoint: llm/outputs/checkpoints/sft/sft_smoke
+subsets:
+  - stereotype
+  - fairness
+max_samples_per_subset: 10
+max_new_tokens: 30
+batch_size: 4
+dtype: float32
+device_map: null
+seed: 42
+output_dir: llm/outputs/eval

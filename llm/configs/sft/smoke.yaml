@@ -1,0 +1,20 @@
+experiment_name: sft_smoke
+model_name_or_path: gpt2
+dtype: float32
+device_map: null
+data_path: llm/outputs/data/semi_synthetic/train.parquet
+max_length: 128
+num_train_epochs: 1
+max_steps: 2  # override epochs for speed
+per_device_train_batch_size: 2
+per_device_eval_batch_size: 2
+gradient_accumulation_steps: 1
+learning_rate: 2.0e-5
+warmup_ratio: 0.0
+eval_fraction: 0.1
+packing: false
+report_to: "none"
+wandb_project: bias-llm
+n_sample_generations: 2
+seed: 123
+output_dir: llm/outputs/checkpoints/sft

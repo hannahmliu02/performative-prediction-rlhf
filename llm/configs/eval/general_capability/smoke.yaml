@@ -1,0 +1,12 @@
+# Smoke test: sft_smoke checkpoint, no judge API calls, 1 question per category.
+# judge_model: "none" returns deterministic seeded scores — verifies code path only.
+experiment_name: gc_smoke
+model_checkpoint: llm/outputs/checkpoints/sft/sft_smoke
+judge_model: "none"
+max_per_category: 1
+max_new_tokens: 60
+batch_size: 4
+dtype: float32
+device_map: null
+seed: 42
+output_dir: llm/outputs/eval

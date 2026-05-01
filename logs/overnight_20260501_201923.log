@@ -1,0 +1,11 @@
+=== Overnight run started at Fri May  1 20:19:23 CEST 2026 ===
+
+
+>>> 20:19:23  /Users/hannahmliu/.local/bin/uv run python -m llm.data.generate_resume_prefs --config llm/configs/data/llm_annotated_quality_tiers.yaml
+>>> 20:19:23  /Users/hannahmliu/.local/bin/uv run python -m llm.data.generate_resume_prefs --config llm/configs/data/llm_annotated_quality_tiers.yaml
+[2m2026-05-01T18:19:24.664231Z[0m [[32m[1minfo     [0m] [1mStarting data generation      [0m [36mn_per_cell[0m=[35m100[0m [36mseed[0m=[35m42[0m
+[2m2026-05-01T18:19:24.664231Z[0m [[32m[1minfo     [0m] [1mStarting data generation      [0m [36mn_per_cell[0m=[35m100[0m [36mseed[0m=[35m42[0m
+[2m2026-05-01T18:19:24.781729Z[0m [[32m[1minfo     [0m] [1mOllama client initialised     [0m [36mhost[0m=[35mhttp://localhost:11434[0m [36mmodel[0m=[35mllama3.1:8b[0m
+[2m2026-05-01T18:19:24.781729Z[0m [[32m[1minfo     [0m] [1mOllama client initialised     [0m [36mhost[0m=[35mhttp://localhost:11434[0m [36mmodel[0m=[35mllama3.1:8b[0m
+[2m2026-05-01T18:19:24.781817Z[0m [[32m[1minfo     [0m] [1mLLM annotator enabled         [0m [36mmodel[0m=[35mllama3.1:8b[0m [36mn_cells[0m=[35m12[0m [36mworkers[0m=[35m4[0m
+[2m2026-05-01T18:19:24.781817Z[0m [[32m[1minfo     [0m] [1mLLM annotator enabled         [0m [36mmodel[0m=[35mllama3.1:8b[0m [36mn_cells[0m=[35m12[0m [36mworkers[0m=[35m4[0m

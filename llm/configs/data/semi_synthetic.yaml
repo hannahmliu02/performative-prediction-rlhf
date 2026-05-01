@@ -1,0 +1,24 @@
+n_per_cell: 100
+roles:
+  - "software engineer"
+axes:
+  demographic_signal:
+    - A
+    - B
+  seniority:
+    - junior
+    - senior
+  domain:
+    - frontend
+    - backend
+    - ml
+noise_epsilon: 0.05
+# Per-axis per-value observation probability.
+# p_obs(cell) = product over axes that appear here.
+# Only demographic_signal is specified; extend as needed.
+obs_probs:
+  demographic_signal:
+    A: 0.8
+    B: 0.4
+output_dir: llm/outputs/data/semi_synthetic
+seed: 42

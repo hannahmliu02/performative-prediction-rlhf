@@ -1,0 +1,14 @@
+# Full audit on the biased RM trained on semi-synthetic data.
+# Requires a properly-trained RM (not rm_smoke) to show significant bias.
+experiment_name: audit_semi_synthetic
+rm_checkpoint: llm/outputs/checkpoints/rm/rm_semi_synthetic
+data_path: llm/outputs/data/semi_synthetic/audit.parquet
+dtype: bfloat16
+device_map: auto
+max_length: 512
+batch_size: 16
+n_masking_steps: 11
+run_content_controlled_probe: true
+run_mlp_probe: true
+seed: 42
+output_dir: llm/outputs/audit

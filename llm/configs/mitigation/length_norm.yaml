@@ -1,0 +1,5 @@
+# Length normalization mitigation.
+# Applies to both RM (score -= beta * log(seq_len)) and DPO (logps / comp_len).
+# For PPO, length_norm_beta flows into the reward function in ppo.py.
+type: length_norm
+beta: 0.1       # headline value; sweep {0.01, 0.1, 1.0} in tuning protocol

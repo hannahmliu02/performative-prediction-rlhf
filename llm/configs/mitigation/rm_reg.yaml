@@ -1,0 +1,6 @@
+# RM regularization mitigation.
+# l2_lambda: L2 penalty on the reward head weight matrix.
+# consistency_lambda: within-group score variance penalty (0 = disabled).
+type: rm_reg
+l2_lambda: 1.0e-3
+consistency_lambda: 0.0

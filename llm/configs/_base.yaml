@@ -1,0 +1,4 @@
+seed: 42
+output_dir: llm/outputs
+wandb_project: bias-llm
+log_level: INFO

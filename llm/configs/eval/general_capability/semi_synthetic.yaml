@@ -1,0 +1,12 @@
+# Full eval on the production SFT checkpoint with Claude Sonnet as judge.
+# Requires ANTHROPIC_API_KEY to be set in the environment.
+experiment_name: gc_semi_synthetic
+model_checkpoint: llm/outputs/checkpoints/sft/semi_synthetic_sft
+judge_model: claude-sonnet-4-6
+max_per_category: 10
+max_new_tokens: 512
+batch_size: 8
+dtype: bfloat16
+device_map: auto
+seed: 42
+output_dir: llm/outputs/eval

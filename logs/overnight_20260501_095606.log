@@ -1,0 +1,117 @@
+=== Overnight run started at Fri May  1 09:56:06 CEST 2026 ===
+
+
+>>> 09:56:06  /Users/hannahmliu/.local/bin/uv run python -m llm.data.generate_resume_prefs --config llm/configs/data/llm_annotated_quality_tiers.yaml
+>>> 09:56:06  /Users/hannahmliu/.local/bin/uv run python -m llm.data.generate_resume_prefs --config llm/configs/data/llm_annotated_quality_tiers.yaml
+[2m2026-05-01T07:56:07.540079Z[0m [[32m[1minfo     [0m] [1mStarting data generation      [0m [36mn_per_cell[0m=[35m100[0m [36mseed[0m=[35m42[0m
+[2m2026-05-01T07:56:07.540079Z[0m [[32m[1minfo     [0m] [1mStarting data generation      [0m [36mn_per_cell[0m=[35m100[0m [36mseed[0m=[35m42[0m
+[2m2026-05-01T07:56:07.588293Z[0m [[32m[1minfo     [0m] [1mOllama client initialised     [0m [36mhost[0m=[35mhttp://localhost:11434[0m [36mmodel[0m=[35mllama3.1:8b[0m
+[2m2026-05-01T07:56:07.588293Z[0m [[32m[1minfo     [0m] [1mOllama client initialised     [0m [36mhost[0m=[35mhttp://localhost:11434[0m [36mmodel[0m=[35mllama3.1:8b[0m
+[2m2026-05-01T07:56:07.588404Z[0m [[32m[1minfo     [0m] [1mLLM annotator enabled         [0m [36mmodel[0m=[35mllama3.1:8b[0m [36mn_cells[0m=[35m12[0m [36mworkers[0m=[35m4[0m
+[2m2026-05-01T07:56:07.588404Z[0m [[32m[1minfo     [0m] [1mLLM annotator enabled         [0m [36mmodel[0m=[35mllama3.1:8b[0m [36mn_cells[0m=[35m12[0m [36mworkers[0m=[35m4[0m
+[2m2026-05-01T08:12:55.152394Z[0m [[32m[1minfo     [0m] [1mData generation progress      [0m [36mdone[0m=[35m100[0m [36mpct[0m=[35m8%[0m [36mtotal[0m=[35m1200[0m
+[2m2026-05-01T08:12:55.152394Z[0m [[32m[1minfo     [0m] [1mData generation progress      [0m [36mdone[0m=[35m100[0m [36mpct[0m=[35m8%[0m [36mtotal[0m=[35m1200[0m
+[2m2026-05-01T08:32:24.205000Z[0m [[32m[1minfo     [0m] [1mData generation progress      [0m [36mdone[0m=[35m200[0m [36mpct[0m=[35m17%[0m [36mtotal[0m=[35m1200[0m
+[2m2026-05-01T08:32:24.205000Z[0m [[32m[1minfo     [0m] [1mData generation progress      [0m [36mdone[0m=[35m200[0m [36mpct[0m=[35m17%[0m [36mtotal[0m=[35m1200[0m
+[2m2026-05-01T08:48:13.459926Z[0m [[32m[1minfo     [0m] [1mData generation progress      [0m [36mdone[0m=[35m300[0m [36mpct[0m=[35m25%[0m [36mtotal[0m=[35m1200[0m
+[2m2026-05-01T08:48:13.459926Z[0m [[32m[1minfo     [0m] [1mData generation progress      [0m [36mdone[0m=[35m300[0m [36mpct[0m=[35m25%[0m [36mtotal[0m=[35m1200[0m
+[2m2026-05-01T09:10:03.768711Z[0m [[32m[1minfo     [0m] [1mData generation progress      [0m [36mdone[0m=[35m400[0m [36mpct[0m=[35m33%[0m [36mtotal[0m=[35m1200[0m
+[2m2026-05-01T09:10:03.768711Z[0m [[32m[1minfo     [0m] [1mData generation progress      [0m [36mdone[0m=[35m400[0m [36mpct[0m=[35m33%[0m [36mtotal[0m=[35m1200[0m
+[2m2026-05-01T09:26:59.897301Z[0m [[32m[1minfo     [0m] [1mData generation progress      [0m [36mdone[0m=[35m500[0m [36mpct[0m=[35m42%[0m [36mtotal[0m=[35m1200[0m
+[2m2026-05-01T09:26:59.897301Z[0m [[32m[1minfo     [0m] [1mData generation progress      [0m [36mdone[0m=[35m500[0m [36mpct[0m=[35m42%[0m [36mtotal[0m=[35m1200[0m
+[2m2026-05-01T09:43:47.163421Z[0m [[32m[1minfo     [0m] [1mData generation progress      [0m [36mdone[0m=[35m600[0m [36mpct[0m=[35m50%[0m [36mtotal[0m=[35m1200[0m
+[2m2026-05-01T09:43:47.163421Z[0m [[32m[1minfo     [0m] [1mData generation progress      [0m [36mdone[0m=[35m600[0m [36mpct[0m=[35m50%[0m [36mtotal[0m=[35m1200[0m
+[2m2026-05-01T09:59:08.073698Z[0m [[32m[1minfo     [0m] [1mData generation progress      [0m [36mdone[0m=[35m700[0m [36mpct[0m=[35m58%[0m [36mtotal[0m=[35m1200[0m
+[2m2026-05-01T09:59:08.073698Z[0m [[32m[1minfo     [0m] [1mData generation progress      [0m [36mdone[0m=[35m700[0m [36mpct[0m=[35m58%[0m [36mtotal[0m=[35m1200[0m
+[2m2026-05-01T10:14:10.409674Z[0m [[32m[1minfo     [0m] [1mData generation progress      [0m [36mdone[0m=[35m800[0m [36mpct[0m=[35m67%[0m [36mtotal[0m=[35m1200[0m
+[2m2026-05-01T10:14:10.409674Z[0m [[32m[1minfo     [0m] [1mData generation progress      [0m [36mdone[0m=[35m800[0m [36mpct[0m=[35m67%[0m [36mtotal[0m=[35m1200[0m
+[2m2026-05-01T10:29:50.985755Z[0m [[32m[1minfo     [0m] [1mData generation progress      [0m [36mdone[0m=[35m900[0m [36mpct[0m=[35m75%[0m [36mtotal[0m=[35m1200[0m
+[2m2026-05-01T10:29:50.985755Z[0m [[32m[1minfo     [0m] [1mData generation progress      [0m [36mdone[0m=[35m900[0m [36mpct[0m=[35m75%[0m [36mtotal[0m=[35m1200[0m
+[2m2026-05-01T10:46:35.741442Z[0m [[32m[1minfo     [0m] [1mData generation progress      [0m [36mdone[0m=[35m1000[0m [36mpct[0m=[35m83%[0m [36mtotal[0m=[35m1200[0m
+[2m2026-05-01T10:46:35.741442Z[0m [[32m[1minfo     [0m] [1mData generation progress      [0m [36mdone[0m=[35m1000[0m [36mpct[0m=[35m83%[0m [36mtotal[0m=[35m1200[0m
+[2m2026-05-01T11:02:59.682203Z[0m [[32m[1minfo     [0m] [1mData generation progress      [0m [36mdone[0m=[35m1100[0m [36mpct[0m=[35m92%[0m [36mtotal[0m=[35m1200[0m
+[2m2026-05-01T11:02:59.682203Z[0m [[32m[1minfo     [0m] [1mData generation progress      [0m [36mdone[0m=[35m1100[0m [36mpct[0m=[35m92%[0m [36mtotal[0m=[35m1200[0m
+[2m2026-05-01T11:20:00.159481Z[0m [[32m[1minfo     [0m] [1mData generation progress      [0m [36mdone[0m=[35m1200[0m [36mpct[0m=[35m100%[0m [36mtotal[0m=[35m1200[0m
+[2m2026-05-01T11:20:00.159481Z[0m [[32m[1minfo     [0m] [1mData generation progress      [0m [36mdone[0m=[35m1200[0m [36mpct[0m=[35m100%[0m [36mtotal[0m=[35m1200[0m
+[2m2026-05-01T11:20:00.171652Z[0m [[32m[1minfo     [0m] [1mLLM annotator bias diagnostic [0m [36mmean_specificity_A[0m=[35m0.786[0m [36mmean_specificity_B[0m=[35m0.769[0m [36mspecificity_gap[0m=[35m0.016[0m
+[2m2026-05-01T11:20:00.171652Z[0m [[32m[1minfo     [0m] [1mLLM annotator bias diagnostic [0m [36mmean_specificity_A[0m=[35m0.786[0m [36mmean_specificity_B[0m=[35m0.769[0m [36mspecificity_gap[0m=[35m0.016[0m
+Creating parquet from Arrow format:   0%|          | 0/1 [00:00<?, ?ba/s]Creating parquet from Arrow format:   0%|          | 0/1 [00:00<?, ?ba/s]Creating parquet from Arrow format: 100%|██████████| 1/1 [00:00<00:00, 80.80ba/s]
+Creating parquet from Arrow format: 100%|██████████| 1/1 [00:00<00:00, 80.80ba/s]
+Creating parquet from Arrow format:   0%|          | 0/1 [00:00<?, ?ba/s]Creating parquet from Arrow format:   0%|          | 0/1 [00:00<?, ?ba/s]Creating parquet from Arrow format: 100%|██████████| 1/1 [00:00<00:00, 184.88ba/s]
+Creating parquet from Arrow format: 100%|██████████| 1/1 [00:00<00:00, 184.88ba/s]
+[2m2026-05-01T11:20:00.599374Z[0m [[32m[1minfo     [0m] [1mDone                          [0m [36maudit_size[0m=[35m1200[0m [36moutput_dir[0m=[35mllm/outputs/data/llm_annotated_quality_tiers[0m [36mtrain_size[0m=[35m735[0m
+[2m2026-05-01T11:20:00.599374Z[0m [[32m[1minfo     [0m] [1mDone                          [0m [36maudit_size[0m=[35m1200[0m [36moutput_dir[0m=[35mllm/outputs/data/llm_annotated_quality_tiers[0m [36mtrain_size[0m=[35m735[0m
+
+
+>>> 13:20:01  /Users/hannahmliu/.local/bin/uv run python -m llm.simulate.feedback_loop --config llm/configs/simulate/feedback_loop/m1_experiment_qt.yaml
+>>> 13:20:01  /Users/hannahmliu/.local/bin/uv run python -m llm.simulate.feedback_loop --config llm/configs/simulate/feedback_loop/m1_experiment_qt.yaml
+
+
+>>> 13:20:11  /Users/hannahmliu/.local/bin/uv run python -m llm.simulate.feedback_loop --config llm/configs/simulate/feedback_loop/m1_experiment_qt_length_norm.yaml
+>>> 13:20:11  /Users/hannahmliu/.local/bin/uv run python -m llm.simulate.feedback_loop --config llm/configs/simulate/feedback_loop/m1_experiment_qt_length_norm.yaml
+
+
+>>> 13:20:19  /Users/hannahmliu/.local/bin/uv run python -m llm.simulate.feedback_loop --config llm/configs/simulate/feedback_loop/m1_experiment_qt_rm_reg.yaml
+>>> 13:20:19  /Users/hannahmliu/.local/bin/uv run python -m llm.simulate.feedback_loop --config llm/configs/simulate/feedback_loop/m1_experiment_qt_rm_reg.yaml
+
+
+>>> 13:20:27  /Users/hannahmliu/.local/bin/uv run python -m llm.simulate.feedback_loop --config llm/configs/simulate/feedback_loop/m1_experiment_qt_ipw.yaml
+>>> 13:20:27  /Users/hannahmliu/.local/bin/uv run python -m llm.simulate.feedback_loop --config llm/configs/simulate/feedback_loop/m1_experiment_qt_ipw.yaml
+
+
+>>> 13:20:35  /Users/hannahmliu/.local/bin/uv run python -m llm.simulate.plot_rounds --mode three --inputs llm/outputs/simulate/m1_experiment_qt/per_round_metrics.csv llm/outputs/simulate/m1_experiment_qt_length_norm/per_round_metrics.csv llm/outputs/simulate/m1_experiment_qt_rm_reg/per_round_metrics.csv llm/outputs/simulate/m1_experiment_qt_ipw/per_round_metrics.csv --output llm/outputs/figures/headline_three_metric.png
+>>> 13:20:35  /Users/hannahmliu/.local/bin/uv run python -m llm.simulate.plot_rounds --mode three --inputs llm/outputs/simulate/m1_experiment_qt/per_round_metrics.csv llm/outputs/simulate/m1_experiment_qt_length_norm/per_round_metrics.csv llm/outputs/simulate/m1_experiment_qt_rm_reg/per_round_metrics.csv llm/outputs/simulate/m1_experiment_qt_ipw/per_round_metrics.csv --output llm/outputs/figures/headline_three_metric.png
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/Users/hannahmliu/performative-prediction-rlhf/llm/simulate/plot_rounds.py", line 289, in <module>
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/Users/hannahmliu/performative-prediction-rlhf/llm/simulate/plot_rounds.py", line 289, in <module>
+    main()
+    main()
+  File "/Users/hannahmliu/performative-prediction-rlhf/llm/simulate/plot_rounds.py", line 280, in main
+  File "/Users/hannahmliu/performative-prediction-rlhf/llm/simulate/plot_rounds.py", line 280, in main
+    df = load_runs(args.inputs)
+    df = load_runs(args.inputs)
+         ^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/hannahmliu/performative-prediction-rlhf/llm/simulate/plot_rounds.py", line 62, in load_runs
+         ^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/hannahmliu/performative-prediction-rlhf/llm/simulate/plot_rounds.py", line 62, in load_runs
+    df = pd.read_csv(p)
+    df = pd.read_csv(p)
+         ^^^^^^^^^^^^^^
+  File "/Users/hannahmliu/performative-prediction-rlhf/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 873, in read_csv
+         ^^^^^^^^^^^^^^
+  File "/Users/hannahmliu/performative-prediction-rlhf/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 873, in read_csv
+    return _read(filepath_or_buffer, kwds)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/hannahmliu/performative-prediction-rlhf/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 300, in _read
+    return _read(filepath_or_buffer, kwds)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/hannahmliu/performative-prediction-rlhf/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 300, in _read
+    parser = TextFileReader(filepath_or_buffer, **kwds)
+    parser = TextFileReader(filepath_or_buffer, **kwds)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/hannahmliu/performative-prediction-rlhf/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 1645, in __init__
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/hannahmliu/performative-prediction-rlhf/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 1645, in __init__
+    self._engine = self._make_engine(f, self.engine)
+    self._engine = self._make_engine(f, self.engine)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/hannahmliu/performative-prediction-rlhf/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 1904, in _make_engine
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/hannahmliu/performative-prediction-rlhf/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 1904, in _make_engine
+    self.handles = get_handle(
+                   ^^^^^^^^^^^
+    self.handles = get_handle(
+  File "/Users/hannahmliu/performative-prediction-rlhf/.venv/lib/python3.12/site-packages/pandas/io/common.py", line 926, in get_handle
+                   ^^^^^^^^^^^
+  File "/Users/hannahmliu/performative-prediction-rlhf/.venv/lib/python3.12/site-packages/pandas/io/common.py", line 926, in get_handle
+    handle = open(
+             ^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: 'llm/outputs/simulate/m1_experiment_qt/per_round_metrics.csv'
+    handle = open(
+             ^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: 'llm/outputs/simulate/m1_experiment_qt/per_round_metrics.csv'

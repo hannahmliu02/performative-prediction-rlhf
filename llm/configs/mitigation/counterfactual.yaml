@@ -1,0 +1,17 @@
+# Counterfactual preference-data debiasing — IPW variant.
+#
+# Each preference pair's Bradley-Terry loss is reweighted by 1 / ψ(x, y)
+# where ψ is the estimated probability the pair would have been observed.
+#
+# propensity_variant:
+#   "oracle"     — uses known obs_probs (cheating upper bound, for ablation)
+#   "classifier" — logistic regression on observable features (main result)
+#
+# obs_probs: must match the data generation config (llm_annotated.yaml / semi_synthetic.yaml)
+
+type: ipw_counterfactual
+propensity_variant: oracle     # "oracle" or "classifier"
+obs_probs:
+  A: 0.8
+  B: 0.4
+clip_eps: 0.05

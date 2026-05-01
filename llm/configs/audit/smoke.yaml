@@ -1,0 +1,15 @@
+# Smoke test: rm_smoke checkpoint (gpt2, 2 steps), CPU, small batch.
+# Verifies the audit pipeline runs without errors.
+# Caveat: rm_smoke is too lightly trained to show significant bias.
+experiment_name: audit_smoke
+rm_checkpoint: llm/outputs/checkpoints/rm/rm_smoke
+data_path: llm/outputs/data/semi_synthetic/audit.parquet
+dtype: float32
+device_map: null
+max_length: 128
+batch_size: 4
+n_masking_steps: 11
+run_content_controlled_probe: false
+run_mlp_probe: false
+seed: 42
+output_dir: llm/outputs/audit

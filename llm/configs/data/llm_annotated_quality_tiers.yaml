@@ -1,0 +1,45 @@
+# Quality-tier preference data — LLM-generated chosen AND rejected.
+#
+# Difference from llm_annotated.yaml:
+#   rejected = LLM-generated mediocre summary (vague, no skills/projects)
+#   instead of a fixed 2-sentence template.
+#
+# This creates a harder preference task: the RM must learn quality
+# discrimination from experience, not just template recognition.  With 2x less
+# group B training data, the RM genuinely degrades for group B — making the
+# demographic bias signal observable in the feedback loop.
+#
+# Run:
+#   ollama serve   # in a separate terminal
+#   python -m llm.data.generate_resume_prefs \
+#       --config llm/configs/data/llm_annotated_quality_tiers.yaml
+
+n_per_cell: 100
+roles:
+  - "software engineer"
+axes:
+  demographic_signal:
+    - A
+    - B
+  seniority:
+    - junior
+    - senior
+  domain:
+    - frontend
+    - backend
+    - ml
+
+noise_epsilon: 0.0
+use_llm_annotator: true
+annotator_backend: "ollama"
+annotator_model: "llama3.1:8b"
+ollama_host: "http://localhost:11434"
+annotator_workers: 4
+
+obs_probs:
+  demographic_signal:
+    A: 0.8
+    B: 0.4
+
+output_dir: llm/outputs/data/llm_annotated_quality_tiers
+seed: 42

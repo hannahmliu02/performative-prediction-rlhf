@@ -1,0 +1,5 @@
+# Simplified Safe-RLHF mitigation (PPO only).
+# safety_lambda: weight on the within-batch fairness penalty.
+# Appendix baseline — not the headline method.
+type: safe_rlhf
+safety_lambda: 0.5
