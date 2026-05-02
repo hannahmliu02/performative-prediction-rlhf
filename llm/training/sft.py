@@ -119,6 +119,7 @@ def train_sft(cfg: DictConfig) -> pathlib.Path:
 
     checkpoint_dir = pathlib.Path(cfg.output_dir) / cfg.experiment_name
 
+    dtype_str = str(cfg.dtype)
     sft_config = SFTConfig(
         output_dir=str(checkpoint_dir),
         num_train_epochs=cfg.num_train_epochs,
@@ -128,6 +129,8 @@ def train_sft(cfg: DictConfig) -> pathlib.Path:
         gradient_accumulation_steps=cfg.gradient_accumulation_steps,
         learning_rate=cfg.learning_rate,
         warmup_ratio=cfg.warmup_ratio,
+        bf16=dtype_str == "bfloat16",
+        fp16=dtype_str == "float16",
         eval_strategy="steps",
         eval_steps=max(1, cfg.max_steps if cfg.max_steps > 0 else 100),
         save_strategy="epoch",

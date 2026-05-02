@@ -154,6 +154,7 @@ def train_dpo(cfg: DictConfig, *, skip_sft: bool = False) -> pathlib.Path:
 
     checkpoint_dir = pathlib.Path(cfg.output_dir) / cfg.experiment_name
 
+    dtype_str = str(cfg.dtype)
     dpo_cfg = DPOConfig(
         output_dir=str(checkpoint_dir),
         num_train_epochs=cfg.num_train_epochs,
@@ -163,6 +164,8 @@ def train_dpo(cfg: DictConfig, *, skip_sft: bool = False) -> pathlib.Path:
         gradient_accumulation_steps=cfg.gradient_accumulation_steps,
         learning_rate=cfg.learning_rate,
         warmup_steps=cfg.warmup_steps,
+        bf16=dtype_str == "bfloat16",
+        fp16=dtype_str == "float16",
         eval_strategy="steps",
         eval_steps=max(1, cfg.max_steps if cfg.max_steps > 0 else 100),
         save_strategy="epoch",

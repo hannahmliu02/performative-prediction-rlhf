@@ -1,0 +1,6 @@
+>>> 07:11:56  === nb + rw overnight run started at Sat May  2 07:11:56 CEST 2026 ===
+>>> 07:11:56  ── Track 1: Name-bias cross-group (nb) ──
+>>> 07:11:56  /Users/hannahmliu/.local/bin/uv run python -m llm.data.generate_resume_prefs --config llm/configs/data/name_bias_cross_group.yaml
+[2m2026-05-02T05:11:58.480852Z[0m [[32m[1minfo     [0m] [1mStarting data generation      [0m [36mn_per_cell[0m=[35m100[0m [36mseed[0m=[35m42[0m
+[2m2026-05-02T05:11:58.494278Z[0m [[32m[1minfo     [0m] [1mOllama client initialised     [0m [36mhost[0m=[35mhttp://localhost:11434[0m [36mmodel[0m=[35mllama3.1:8b[0m
+[2m2026-05-02T05:11:58.494428Z[0m [[32m[1minfo     [0m] [1mCross-group name-bias generation (content-controlled)[0m [36mmodel[0m=[35mllama3.1:8b[0m [36mn_cells[0m=[35m6[0m [36mworkers[0m=[35m4[0m
