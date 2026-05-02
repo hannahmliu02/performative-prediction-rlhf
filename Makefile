@@ -1,4 +1,4 @@
-UV := $(HOME)/.local/bin/uv
+UV := $(shell command -v uv 2>/dev/null || echo $(HOME)/.local/bin/uv)
 export VIRTUAL_ENV=
 
 .PHONY: fmt lint test smoke
