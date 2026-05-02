@@ -21,3 +21,28 @@ obs_probs:
 
 output_dir: llm/outputs/data/real_world_hh_rlhf
 seed: 42
+
+# ── Model / hardware ─────────────────────────────────────────────────────────
+sft_checkpoint: gpt2
+dtype: float32
+device_map: null
+max_length: 512
+dpo_max_length: 256
+
+# ── RM training ──────────────────────────────────────────────────────────────
+rm_max_steps: 50
+rm_batch_size: 4
+rm_lr: 1.0e-5
+rm_eval_fraction: 0.1
+
+# ── Policy training (DPO) ────────────────────────────────────────────────────
+policy_max_steps: 100
+policy_batch_size: 1
+gradient_accumulation_steps: 4
+gradient_checkpointing: true
+policy_lr: 5.0e-6
+policy_beta: 0.1
+
+# ── DecodingTrust eval ───────────────────────────────────────────────────────
+dt_max_samples: 50
+generation_batch_size: 8

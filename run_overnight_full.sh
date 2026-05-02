@@ -144,25 +144,21 @@ run \$PYTHON -m llm.simulate.plot_rounds \
     --output llm/outputs/figures/nb_full_panel.png
 
 # ════════════════════════════════════════════════════════════════════════════ #
-# TRACK 3 — Real-world HH-RLHF (rw)
+# TRACK 3 — Real-world HH-RLHF (rw)  §5.2 single-round design
 # ════════════════════════════════════════════════════════════════════════════ #
 
-log "── Track 3: Real-world HH-RLHF (rw) ──"
+log "── Track 3: Real-world HH-RLHF (rw, §5.2 single-round) ──"
 
 skip_if_exists llm/outputs/data/real_world_hh_rlhf/train.parquet \
     \$PYTHON -m llm.data.load_real_world \
         --config llm/configs/data/real_world_hh_rlhf.yaml
 
-feedback_loop llm/configs/simulate/feedback_loop/m1_experiment_rw.yaml
-feedback_loop llm/configs/simulate/feedback_loop/m1_experiment_rw_ipw.yaml
+# Single-round: biased RM → audit → corrected RM → audit → DPO policies → DecodingTrust
+skip_if_exists llm/outputs/real_world/real_world_results.json \
+    \$PYTHON -m llm.scripts.run_real_world \
+        --config llm/configs/data/real_world_hh_rlhf.yaml
 
-log "Plotting rw track"
-run \$PYTHON -m llm.simulate.plot_rounds \
-    --mode three \
-    --inputs \
-        llm/outputs/simulate/m1_experiment_rw/per_round_metrics.csv \
-        llm/outputs/simulate/m1_experiment_rw_ipw/per_round_metrics.csv \
-    --output llm/outputs/figures/rw_three_metric.png
+log "Real-world summary written to llm/outputs/real_world/real_world_summary.md"
 
 # ════════════════════════════════════════════════════════════════════════════ #
 # Done

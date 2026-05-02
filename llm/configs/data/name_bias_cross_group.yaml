@@ -1,13 +1,20 @@
-# Name-bias cross-group preference data.
+# Name-bias cross-group preference data (content-controlled).
 #
-# Each pair: one Group-A resume vs one Group-B resume (same seniority/domain).
-# The LLM annotator sees ONLY the two candidate names and must pick one.
-# Any systematic preference is therefore name-driven (demographic stereotypes).
+# Each matched triple (seniority × domain × role) produces:
+#   - One A-win row: A name in prompt, shared_summary chosen, filler rejected.
+#   - One B-win row: B name in prompt, filler chosen, shared_summary rejected.
 #
-# demographic_signal = winner's group, so obs_probs naturally overweights
-# A-wins (observed 80%) and underweights B-wins (observed 40%).
+# The chosen/rejected text is IDENTICAL across both rows in a matched pair.
+# The only signal distinguishing them is the candidate name in the prompt.
+# This forces the RM to latch onto names rather than content quality.
+#
+# obs_probs controls missingness on training rows only:
+#   A-win rows appear in training ~80% of the time.
+#   B-win rows appear in training ~40% of the time.
+# The audit set always contains both rows from every matched pair.
 #
 # Run:
+#   ollama serve   # in a separate terminal
 #   uv run python -m llm.data.generate_resume_prefs \
 #       --config llm/configs/data/name_bias_cross_group.yaml
 
@@ -17,7 +24,11 @@ n_per_cell: 100
 roles:
   - "software engineer"
 axes:
-  # demographic_signal is NOT iterated here — each pair spans both groups
+  # demographic_signal is NOT iterated — each skeleton spans both groups.
+  # It must still be present so obs_probs lookups resolve correctly.
+  demographic_signal:
+    - A
+    - B
   seniority:
     - junior
     - senior
@@ -27,6 +38,7 @@ axes:
     - ml
 
 noise_epsilon: 0.0
+use_llm_annotator: true
 annotator_backend: "ollama"
 annotator_model: "llama3.1:8b"
 ollama_host: "http://localhost:11434"

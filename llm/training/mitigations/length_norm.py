@@ -130,7 +130,23 @@ class LengthNormDPOTrainer(DPOTrainer):
         # call picks up — but TRL doesn't expose that hook.  Instead we
         # override the full block that computes logps, matching TRL 1.2.0.
 
-        from trl.trainer.utils import disable_gradient_checkpointing  # type: ignore[import-untyped]
+        try:
+            from trl.trainer.utils import (
+                disable_gradient_checkpointing,  # type: ignore[import-untyped]
+            )
+        except ImportError:
+            from contextlib import contextmanager
+
+            @contextmanager  # type: ignore[no-redef]
+            def disable_gradient_checkpointing(model: Any, kwargs: Any = None):  # type: ignore[misc]
+                was_enabled = getattr(model, "is_gradient_checkpointing", False)
+                if was_enabled:
+                    model.gradient_checkpointing_disable()
+                try:
+                    yield
+                finally:
+                    if was_enabled:
+                        model.gradient_checkpointing_enable(**(kwargs or {}))
 
         try:
             from peft import is_peft_model  # type: ignore[import-untyped]

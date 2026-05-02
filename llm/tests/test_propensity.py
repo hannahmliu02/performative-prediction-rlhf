@@ -249,7 +249,6 @@ class TestAssertPropensityResidualsUncorrelated:
             def predict_proba(self, df: pd.DataFrame) -> np.ndarray:
                 return np.full(len(df), 0.5)
 
-        n = 500
         groups = np.array(["A"] * 250 + ["B"] * 250)
         # A is always observed, B is never observed → strong correlation
         is_obs = np.array([1] * 250 + [0] * 250)

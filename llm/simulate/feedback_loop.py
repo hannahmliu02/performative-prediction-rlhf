@@ -82,12 +82,31 @@ def _per_cell_accuracy(
     max_length: int,
     batch_size: int,
 ) -> dict[str, float]:
-    """Evaluate RM per-cell accuracy on the fixed audit dataset."""
+    """Evaluate RM per-cell quality accuracy on the fixed audit dataset.
+
+    When ``chosen_is_good`` is available (nb track), correct means the RM
+    ranked the objectively better response higher — regardless of the training
+    label.  For rows where chosen_is_good=False (B-win rows where filler is
+    labelled "chosen"), correct = score(rejected) > score(chosen) because the
+    rejected column contains the good summary.  This lets us catch the bias:
+    a biased RM will score the good summary lower on B-name prompts → low
+    quality accuracy for Group B even though its label accuracy is high.
+
+    For the standard qt track (chosen_is_good always True), this reduces to
+    the original label-accuracy computation.
+    """
     chosen_texts = [p + c for p, c in zip(audit_df["prompt"], audit_df["chosen"])]
     rejected_texts = [p + r for p, r in zip(audit_df["prompt"], audit_df["rejected"])]
     sc = _score_texts(rm, chosen_texts, max_length, batch_size)
     sr = _score_texts(rm, rejected_texts, max_length, batch_size)
-    correct = (sc > sr).astype(int)
+
+    if "chosen_is_good" in audit_df.columns:
+        chosen_is_good = audit_df["chosen_is_good"].values.astype(bool)
+        # chosen_is_good=True  → quality correct if sc > sr
+        # chosen_is_good=False → quality correct if sr > sc (rejected is the good response)
+        correct = np.where(chosen_is_good, sc > sr, sr > sc).astype(int)
+    else:
+        correct = (sc > sr).astype(int)
 
     cell_correct: dict[str, int] = defaultdict(int)
     cell_total: dict[str, int] = defaultdict(int)
@@ -396,12 +415,27 @@ def run_feedback_loop(cfg: DictConfig) -> list[dict[str, Any]]:
 
     log.info("Loading audit dataset (fixed eval set)", path=cfg.held_out_data)
     audit_df = pd.read_parquet(cfg.held_out_data)
-    generation_n = int(cfg.get("generation_n_prompts", len(audit_df)))
-    if generation_n < len(audit_df):
-        audit_df_for_gen = audit_df.sample(n=generation_n, random_state=cfg.seed).reset_index(drop=True)
-        log.info("Subsampling audit set for generation", n=generation_n, total=len(audit_df))
+
+    # For nb track, only generate from rows where the label aligns with quality
+    # (chosen_is_good=True). B-win rows have inverted labels (filler="chosen"),
+    # so using them as generation prompts would compare policy output against
+    # the good summary in "rejected", confusing the RM scoring step.
+    if "chosen_is_good" in audit_df.columns:
+        audit_df_for_gen_pool = audit_df[audit_df["chosen_is_good"]].reset_index(drop=True)
+        log.info(
+            "Filtering audit set for generation (chosen_is_good=True only)",
+            kept=len(audit_df_for_gen_pool),
+            total=len(audit_df),
+        )
     else:
-        audit_df_for_gen = audit_df
+        audit_df_for_gen_pool = audit_df
+
+    generation_n = int(cfg.get("generation_n_prompts", len(audit_df_for_gen_pool)))
+    if generation_n < len(audit_df_for_gen_pool):
+        audit_df_for_gen = audit_df_for_gen_pool.sample(n=generation_n, random_state=cfg.seed).reset_index(drop=True)
+        log.info("Subsampling audit set for generation", n=generation_n, total=len(audit_df_for_gen_pool))
+    else:
+        audit_df_for_gen = audit_df_for_gen_pool
 
     log.info("Loading initial training data", path=cfg.train_data)
     accumulated_df = pd.read_parquet(cfg.train_data)
@@ -410,7 +444,27 @@ def run_feedback_loop(cfg: DictConfig) -> list[dict[str, Any]]:
     current_policy_checkpoint = cfg.sft_checkpoint
     metrics_per_round: list[dict[str, Any]] = []
 
-    for round_idx in range(cfg.num_rounds):
+    # Resume from a previous partial run if the CSV already exists.
+    csv_path = output_dir / "per_round_metrics.csv"
+    start_round = 0
+    if csv_path.exists():
+        prior = pd.read_csv(csv_path)
+        if len(prior) > 0:
+            metrics_per_round = prior.to_dict("records")
+            start_round = int(prior["round"].max()) + 1
+            last = metrics_per_round[-1]
+            current_policy_checkpoint = last.get("policy_checkpoint", cfg.sft_checkpoint)
+            # Reload accumulated data up to this point
+            last_train_path = output_dir / f"round_{start_round - 1}" / "train.parquet"
+            if last_train_path.exists():
+                accumulated_df = pd.read_parquet(str(last_train_path))
+            log.info(
+                "Resuming from previous run",
+                completed_rounds=start_round,
+                n_train=len(accumulated_df),
+            )
+
+    for round_idx in range(start_round, cfg.num_rounds):
         log.info("=== Starting round", round_idx=round_idx, n_train=len(accumulated_df))
         round_dir = output_dir / f"round_{round_idx}"
         round_dir.mkdir(parents=True, exist_ok=True)
@@ -580,6 +634,10 @@ def run_feedback_loop(cfg: DictConfig) -> list[dict[str, Any]]:
         # --- Accumulate new data ---
         if len(new_df) > 0:
             accumulated_df = pd.concat([accumulated_df, new_df], ignore_index=True)
+
+        # --- Save metrics incrementally so a killed run can be inspected ---
+        metrics_df_so_far = pd.DataFrame(metrics_per_round)
+        metrics_df_so_far.to_csv(output_dir / "per_round_metrics.csv", index=False)
 
         # --- Free device memory before next round ---
         del rm
