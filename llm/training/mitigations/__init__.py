@@ -31,11 +31,13 @@ def _load_rm_registry() -> None:
 def _load_dpo_registry() -> None:
     if _DPO_TRAINER_REGISTRY:
         return
+    from llm.training.mitigations.ipw_dpo import IPWDPOTrainer
     from llm.training.mitigations.length_norm import LengthNormDPOTrainer
 
     _DPO_TRAINER_REGISTRY["none"] = DPOTrainer
     _DPO_TRAINER_REGISTRY["length_norm"] = LengthNormDPOTrainer
     _DPO_TRAINER_REGISTRY["kl_constrained"] = DPOTrainer  # KL is a PPO-only mitigation
+    _DPO_TRAINER_REGISTRY["ours_ipw"] = IPWDPOTrainer
 
 
 def get_rm_trainer_cls(mitigation_cfg: DictConfig | dict[str, Any] | None) -> type:
@@ -72,6 +74,16 @@ def get_dpo_trainer_cls(mitigation_cfg: DictConfig | dict[str, Any] | None) -> t
         return DPOTrainer
     m_type = mitigation_cfg.get("type", "none") if isinstance(mitigation_cfg, dict) else mitigation_cfg.get("type", "none")
     return _DPO_TRAINER_REGISTRY.get(m_type, DPOTrainer)
+
+
+def get_dpo_trainer_kwargs(mitigation_cfg: DictConfig | dict[str, Any] | None) -> dict[str, Any]:
+    """Return extra kwargs to pass to the DPO trainer constructor."""
+    if not mitigation_cfg:
+        return {}
+    m_type = mitigation_cfg.get("type", "none") if isinstance(mitigation_cfg, dict) else mitigation_cfg.get("type", "none")
+    if m_type == "length_norm":
+        return {"length_norm_beta": float(mitigation_cfg.get("beta", 0.1))}
+    return {}
 
 
 def get_ppo_reward_fn_kwargs(mitigation_cfg: DictConfig | dict[str, Any] | None) -> dict[str, Any]:

@@ -23,7 +23,7 @@ from trl import DPOConfig
 
 from llm.models.backbone import _DTYPE_MAP
 from llm.models.policy import Policy
-from llm.training.mitigations import get_dpo_trainer_cls
+from llm.training.mitigations import get_dpo_trainer_cls, get_dpo_trainer_kwargs
 from llm.utils.logging import get_logger
 from llm.utils.seeding import set_seed
 
@@ -155,6 +155,7 @@ def train_dpo(cfg: DictConfig, *, skip_sft: bool = False) -> pathlib.Path:
     checkpoint_dir = pathlib.Path(cfg.output_dir) / cfg.experiment_name
 
     dtype_str = str(cfg.dtype)
+    _cuda = torch.cuda.is_available()
     dpo_cfg = DPOConfig(
         output_dir=str(checkpoint_dir),
         num_train_epochs=cfg.num_train_epochs,
@@ -164,8 +165,8 @@ def train_dpo(cfg: DictConfig, *, skip_sft: bool = False) -> pathlib.Path:
         gradient_accumulation_steps=cfg.gradient_accumulation_steps,
         learning_rate=cfg.learning_rate,
         warmup_steps=cfg.warmup_steps,
-        bf16=dtype_str == "bfloat16",
-        fp16=dtype_str == "float16",
+        bf16=_cuda and dtype_str == "bfloat16",
+        fp16=_cuda and dtype_str == "float16",
         eval_strategy="steps",
         eval_steps=max(1, cfg.max_steps if cfg.max_steps > 0 else 100),
         save_strategy="epoch",
@@ -180,8 +181,28 @@ def train_dpo(cfg: DictConfig, *, skip_sft: bool = False) -> pathlib.Path:
 
     mitigation_cfg = cfg.get("mitigation") or {}
     dpo_trainer_cls = get_dpo_trainer_cls(mitigation_cfg)
+    dpo_trainer_kwargs = get_dpo_trainer_kwargs(mitigation_cfg)
     if mitigation_cfg:
         log.info("Applying DPO mitigation", type=mitigation_cfg.get("type", "none"))
+
+    if mitigation_cfg and mitigation_cfg.get("type") == "ours_ipw":
+        from omegaconf import OmegaConf
+
+        import datasets as _datasets
+
+        from llm.mitigation.propensity import fit_and_weight
+
+        full_ds = _datasets.Dataset.from_parquet(cfg.data_path)
+        full_train_df = full_ds.train_test_split(
+            test_size=cfg.eval_fraction, seed=cfg.seed
+        )["train"].to_pandas()
+        m_dict = (
+            OmegaConf.to_container(mitigation_cfg)
+            if hasattr(mitigation_cfg, "keys")
+            else dict(mitigation_cfg)
+        )
+        dpo_trainer_kwargs["ipw_weights"] = fit_and_weight(full_train_df, m_dict)
+        log.info("IPW weights computed for DPO", n=len(dpo_trainer_kwargs["ipw_weights"]))
 
     policy_for_callback = Policy(model, tokenizer)
     sample_prompts = [train_ds[i]["prompt"] for i in range(min(3, len(train_ds)))]
@@ -194,6 +215,7 @@ def train_dpo(cfg: DictConfig, *, skip_sft: bool = False) -> pathlib.Path:
         eval_dataset=eval_ds,
         processing_class=tokenizer,
         callbacks=[DPOSampleGenerationCallback(policy_for_callback, sample_prompts)],
+        **dpo_trainer_kwargs,
     )
 
     log.info("Starting DPO training", experiment=cfg.experiment_name, skip_sft=skip_sft)

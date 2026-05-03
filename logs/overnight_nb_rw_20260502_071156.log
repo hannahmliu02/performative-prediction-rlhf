@@ -4,3 +4,175 @@
 [2m2026-05-02T05:11:58.480852Z[0m [[32m[1minfo     [0m] [1mStarting data generation      [0m [36mn_per_cell[0m=[35m100[0m [36mseed[0m=[35m42[0m
 [2m2026-05-02T05:11:58.494278Z[0m [[32m[1minfo     [0m] [1mOllama client initialised     [0m [36mhost[0m=[35mhttp://localhost:11434[0m [36mmodel[0m=[35mllama3.1:8b[0m
 [2m2026-05-02T05:11:58.494428Z[0m [[32m[1minfo     [0m] [1mCross-group name-bias generation (content-controlled)[0m [36mmodel[0m=[35mllama3.1:8b[0m [36mn_cells[0m=[35m6[0m [36mworkers[0m=[35m4[0m
+[2m2026-05-02T05:16:24.941751Z[0m [[32m[1minfo     [0m] [1mName-bias generation progress [0m [36mdone[0m=[35m50[0m [36mtotal[0m=[35m600[0m
+[2m2026-05-02T05:21:20.290253Z[0m [[32m[1minfo     [0m] [1mName-bias generation progress [0m [36mdone[0m=[35m100[0m [36mtotal[0m=[35m600[0m
+[2m2026-05-02T05:26:01.108483Z[0m [[32m[1minfo     [0m] [1mName-bias generation progress [0m [36mdone[0m=[35m150[0m [36mtotal[0m=[35m600[0m
+[2m2026-05-02T05:31:14.745862Z[0m [[32m[1minfo     [0m] [1mName-bias generation progress [0m [36mdone[0m=[35m200[0m [36mtotal[0m=[35m600[0m
+[2m2026-05-02T05:36:32.230075Z[0m [[32m[1minfo     [0m] [1mName-bias generation progress [0m [36mdone[0m=[35m250[0m [36mtotal[0m=[35m600[0m
+[2m2026-05-02T05:41:26.081904Z[0m [[32m[1minfo     [0m] [1mName-bias generation progress [0m [36mdone[0m=[35m300[0m [36mtotal[0m=[35m600[0m
+[2m2026-05-02T05:45:41.403772Z[0m [[32m[1minfo     [0m] [1mName-bias generation progress [0m [36mdone[0m=[35m350[0m [36mtotal[0m=[35m600[0m
+[2m2026-05-02T05:49:59.356556Z[0m [[32m[1minfo     [0m] [1mName-bias generation progress [0m [36mdone[0m=[35m400[0m [36mtotal[0m=[35m600[0m
+[2m2026-05-02T05:54:53.115828Z[0m [[32m[1minfo     [0m] [1mName-bias generation progress [0m [36mdone[0m=[35m450[0m [36mtotal[0m=[35m600[0m
+[2m2026-05-02T06:00:41.817942Z[0m [[32m[1minfo     [0m] [1mName-bias generation progress [0m [36mdone[0m=[35m500[0m [36mtotal[0m=[35m600[0m
+[2m2026-05-02T06:06:49.822412Z[0m [[32m[1minfo     [0m] [1mName-bias generation progress [0m [36mdone[0m=[35m550[0m [36mtotal[0m=[35m600[0m
+[2m2026-05-02T06:12:22.200945Z[0m [[32m[1minfo     [0m] [1mName-bias generation progress [0m [36mdone[0m=[35m600[0m [36mtotal[0m=[35m600[0m
+[2m2026-05-02T06:12:22.211364Z[0m [[32m[1minfo     [0m] [1mName-bias generation complete [0m [36maudit_A[0m=[35m600[0m [36maudit_B[0m=[35m600[0m [36mchosen_is_good_rate_audit[0m=[35m0.500[0m [36mtrain_A[0m=[35m485[0m [36mtrain_B[0m=[35m226[0m
+Creating parquet from Arrow format:   0%|          | 0/1 [00:00<?, ?ba/s]Creating parquet from Arrow format: 100%|██████████| 1/1 [00:00<00:00, 79.63ba/s]
+Creating parquet from Arrow format:   0%|          | 0/1 [00:00<?, ?ba/s]Creating parquet from Arrow format: 100%|██████████| 1/1 [00:00<00:00, 206.32ba/s]
+[2m2026-05-02T06:12:22.850783Z[0m [[32m[1minfo     [0m] [1mDone                          [0m [36maudit_size[0m=[35m1200[0m [36moutput_dir[0m=[35mllm/outputs/data/name_bias_cross_group[0m [36mtrain_size[0m=[35m711[0m
+>>> 08:12:23  /Users/hannahmliu/.local/bin/uv run python -m llm.scripts.run_feedback_loop --config llm/configs/simulate/feedback_loop/m1_experiment_nb.yaml
+[2m2026-05-02T06:12:33.696242Z[0m [[32m[1minfo     [0m] [1mStarting feedback-loop simulation[0m [36mconfig[0m=[35mllm/configs/simulate/feedback_loop/m1_experiment_nb.yaml[0m [36mnum_rounds[0m=[35m5[0m
+[2m2026-05-02T06:12:33.700763Z[0m [[32m[1minfo     [0m] [1mLoading audit dataset (fixed eval set)[0m [36mpath[0m=[35mllm/outputs/data/name_bias_cross_group/audit.parquet[0m
+[2m2026-05-02T06:12:33.735521Z[0m [[32m[1minfo     [0m] [1mFiltering audit set for generation (chosen_is_good=True only)[0m [36mkept[0m=[35m600[0m [36mtotal[0m=[35m1200[0m
+[2m2026-05-02T06:12:33.736972Z[0m [[32m[1minfo     [0m] [1mSubsampling audit set for generation[0m [36mn[0m=[35m64[0m [36mtotal[0m=[35m600[0m
+[2m2026-05-02T06:12:33.737051Z[0m [[32m[1minfo     [0m] [1mLoading initial training data [0m [36mpath[0m=[35mllm/outputs/data/name_bias_cross_group/train.parquet[0m
+[2m2026-05-02T06:12:33.740422Z[0m [[32m[1minfo     [0m] [1m=== Starting round            [0m [36mn_train[0m=[35m711[0m [36mround_idx[0m=[35m0[0m
+[2m2026-05-02T06:12:33.746998Z[0m [[32m[1minfo     [0m] [1mTraining RM                   [0m [36mexperiment[0m=[35mm1_experiment_nb_rm_r0[0m [36mround[0m=[35m0[0m
+[2m2026-05-02T06:12:33.747716Z[0m [[32m[1minfo     [0m] [1mLoading model                 [0m [36mmodel[0m=[35mgpt2[0m
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Loading weights:   0%|          | 0/148 [00:00<?, ?it/s]Loading weights: 100%|██████████| 148/148 [00:00<00:00, 5894.68it/s]
+[transformers] [1mGPT2ForSequenceClassification LOAD REPORT[0m from: gpt2
+Key          | Status  | 
+-------------+---------+-
+score.weight | MISSING | 
+
+Notes:
+- MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+[2m2026-05-02T06:12:35.109821Z[0m [[32m[1minfo     [0m] [1mLoading dataset               [0m [36mdata_path[0m=[35mllm/outputs/simulate/m1_experiment_nb/round_0/train.parquet[0m
+Generating train split: 0 examples [00:00, ? examples/s]Generating train split: 711 examples [00:00, 157128.94 examples/s]
+[2m2026-05-02T06:12:35.156252Z[0m [[32m[1minfo     [0m] [1mDataset sizes                 [0m [36meval[0m=[35m72[0m [36mtrain[0m=[35m639[0m
+[transformers] warmup_ratio is deprecated and will be removed in v5.2. Use `warmup_steps` instead.
+Adding EOS to train dataset:   0%|          | 0/639 [00:00<?, ? examples/s]Adding EOS to train dataset: 100%|██████████| 639/639 [00:00<00:00, 21595.21 examples/s]
+Tokenizing train dataset:   0%|          | 0/639 [00:00<?, ? examples/s]Tokenizing train dataset:  21%|██        | 134/639 [00:00<00:00, 1330.01 examples/s]Tokenizing train dataset:  43%|████▎     | 275/639 [00:00<00:00, 1369.20 examples/s]Tokenizing train dataset:  65%|██████▍   | 414/639 [00:00<00:00, 1375.20 examples/s]Tokenizing train dataset:  87%|████████▋ | 556/639 [00:00<00:00, 1386.15 examples/s]Tokenizing train dataset: 100%|██████████| 639/639 [00:00<00:00, 1266.24 examples/s]
+Filtering train >256 tokens:   0%|          | 0/639 [00:00<?, ? examples/s]Filtering train >256 tokens: 100%|██████████| 639/639 [00:00<00:00, 10532.07 examples/s]
+Adding EOS to eval dataset:   0%|          | 0/72 [00:00<?, ? examples/s]Adding EOS to eval dataset: 100%|██████████| 72/72 [00:00<00:00, 14153.34 examples/s]
+Tokenizing eval dataset:   0%|          | 0/72 [00:00<?, ? examples/s]Tokenizing eval dataset: 100%|██████████| 72/72 [00:00<00:00, 1172.22 examples/s]
+Filtering eval >256 tokens:   0%|          | 0/72 [00:00<?, ? examples/s]Filtering eval >256 tokens: 100%|██████████| 72/72 [00:00<00:00, 8908.26 examples/s]
+[2m2026-05-02T06:12:37.711015Z[0m [[32m[1minfo     [0m] [1mStarting RM training          [0m [36mexperiment[0m=[35mm1_experiment_nb_rm_r0[0m
+  0%|          | 0/50 [00:00<?, ?it/s]/Users/hannahmliu/performative-prediction-rlhf/.venv/lib/python3.12/site-packages/torch/utils/data/dataloader.py:775: UserWarning: 'pin_memory' argument is set as true but not supported on MPS now, device pinned memory won't be used.
+  super().__init__(loader)
+  2%|▏         | 1/50 [00:08<06:57,  8.52s/it]                                                2%|▏         | 1/50 [00:08<06:57,  8.52s/it]  4%|▍         | 2/50 [00:10<03:40,  4.60s/it]                                                4%|▍         | 2/50 [00:10<03:40,  4.60s/it]  6%|▌         | 3/50 [00:11<02:27,  3.14s/it]                                                6%|▌         | 3/50 [00:11<02:27,  3.14s/it]  8%|▊         | 4/50 [00:12<01:46,  2.31s/it]                                                8%|▊         | 4/50 [00:12<01:46,  2.31s/it] 10%|█         | 5/50 [00:13<01:23,  1.86s/it]                                               10%|█         | 5/50 [00:13<01:23,  1.86s/it] 12%|█▏        | 6/50 [00:15<01:12,  1.65s/it]                                               12%|█▏        | 6/50 [00:15<01:12,  1.65s/it] 14%|█▍        | 7/50 [00:16<01:07,  1.57s/it]                                               14%|█▍        | 7/50 [00:16<01:07,  1.57s/it] 16%|█▌        | 8/50 [00:17<01:04,  1.53s/it]                                               16%|█▌        | 8/50 [00:18<01:04,  1.53s/it] 18%|█▊        | 9/50 [00:19<00:56,  1.38s/it]                                               18%|█▊        | 9/50 [00:19<00:56,  1.38s/it] 20%|██        | 10/50 [00:20<00:51,  1.29s/it]                                                20%|██        | 10/50 [00:20<00:51,  1.29s/it] 22%|██▏       | 11/50 [00:21<00:49,  1.27s/it]                                                22%|██▏       | 11/50 [00:21<00:49,  1.27s/it] 24%|██▍       | 12/50 [00:22<00:49,  1.30s/it]                                                24%|██▍       | 12/50 [00:22<00:49,  1.30s/it] 26%|██▌       | 13/50 [00:23<00:44,  1.22s/it]                                                26%|██▌       | 13/50 [00:23<00:44,  1.22s/it] 28%|██▊       | 14/50 [00:24<00:41,  1.16s/it]                                                28%|██▊       | 14/50 [00:24<00:41,  1.16s/it] 30%|███       | 15/50 [00:25<00:38,  1.11s/it]                                                30%|███       | 15/50 [00:25<00:38,  1.11s/it] 32%|███▏      | 16/50 [00:26<00:39,  1.15s/it]                                                32%|███▏      | 16/50 [00:27<00:39,  1.15s/it] 34%|███▍      | 17/50 [00:27<00:36,  1.10s/it]                                                34%|███▍      | 17/50 [00:28<00:36,  1.10s/it] 36%|███▌      | 18/50 [00:29<00:35,  1.11s/it]                                                36%|███▌      | 18/50 [00:29<00:35,  1.11s/it] 38%|███▊      | 19/50 [00:30<00:34,  1.10s/it]                                                38%|███▊      | 19/50 [00:30<00:34,  1.10s/it] 40%|████      | 20/50 [00:31<00:32,  1.07s/it]                                                40%|████      | 20/50 [00:31<00:32,  1.07s/it] 42%|████▏     | 21/50 [00:32<00:30,  1.05s/it]                                                42%|████▏     | 21/50 [00:32<00:30,  1.05s/it] 44%|████▍     | 22/50 [00:33<00:28,  1.03s/it]                                                44%|████▍     | 22/50 [00:33<00:28,  1.03s/it] 46%|████▌     | 23/50 [00:34<00:27,  1.02s/it]                                                46%|████▌     | 23/50 [00:34<00:27,  1.02s/it] 48%|████▊     | 24/50 [00:35<00:26,  1.03s/it]                                                48%|████▊     | 24/50 [00:35<00:26,  1.03s/it] 50%|█████     | 25/50 [00:36<00:25,  1.03s/it]                                                50%|█████     | 25/50 [00:36<00:25,  1.03s/it] 52%|█████▏    | 26/50 [00:37<00:24,  1.03s/it]                                                52%|█████▏    | 26/50 [00:37<00:24,  1.03s/it] 54%|█████▍    | 27/50 [00:38<00:25,  1.09s/it]                                                54%|█████▍    | 27/50 [00:38<00:25,  1.09s/it] 56%|█████▌    | 28/50 [00:39<00:23,  1.06s/it]                                                56%|█████▌    | 28/50 [00:39<00:23,  1.06s/it] 58%|█████▊    | 29/50 [00:40<00:21,  1.02s/it]                                                58%|█████▊    | 29/50 [00:40<00:21,  1.02s/it] 60%|██████    | 30/50 [00:41<00:20,  1.01s/it]                                                60%|██████    | 30/50 [00:41<00:20,  1.01s/it] 62%|██████▏   | 31/50 [00:42<00:18,  1.02it/s]                                                62%|██████▏   | 31/50 [00:42<00:18,  1.02it/s] 64%|██████▍   | 32/50 [00:43<00:17,  1.05it/s]                                                64%|██████▍   | 32/50 [00:43<00:17,  1.05it/s] 66%|██████▌   | 33/50 [00:44<00:16,  1.03it/s]                                                66%|██████▌   | 33/50 [00:44<00:16,  1.03it/s] 68%|██████▊   | 34/50 [00:45<00:15,  1.01it/s]                                                68%|██████▊   | 34/50 [00:45<00:15,  1.01it/s] 70%|███████   | 35/50 [00:46<00:14,  1.01it/s]                                                70%|███████   | 35/50 [00:46<00:14,  1.01it/s] 72%|███████▏  | 36/50 [00:47<00:13,  1.03it/s]                                                72%|███████▏  | 36/50 [00:47<00:13,  1.03it/s] 74%|███████▍  | 37/50 [00:48<00:12,  1.02it/s]                                                74%|███████▍  | 37/50 [00:48<00:12,  1.02it/s] 76%|███████▌  | 38/50 [00:49<00:11,  1.02it/s]                                                76%|███████▌  | 38/50 [00:49<00:11,  1.02it/s] 78%|███████▊  | 39/50 [00:50<00:11,  1.02s/it]                                                78%|███████▊  | 39/50 [00:50<00:11,  1.02s/it] 80%|████████  | 40/50 [00:51<00:10,  1.04s/it]                                                80%|████████  | 40/50 [00:51<00:10,  1.04s/it] 82%|████████▏ | 41/50 [00:52<00:09,  1.03s/it]                                                82%|████████▏ | 41/50 [00:52<00:09,  1.03s/it] 84%|████████▍ | 42/50 [00:53<00:08,  1.05s/it]                                                84%|████████▍ | 42/50 [00:53<00:08,  1.05s/it] 86%|████████▌ | 43/50 [00:54<00:07,  1.02s/it]                                                86%|████████▌ | 43/50 [00:54<00:07,  1.02s/it] 88%|████████▊ | 44/50 [00:55<00:05,  1.03it/s]                                                88%|████████▊ | 44/50 [00:55<00:05,  1.03it/s] 90%|█████████ | 45/50 [00:56<00:04,  1.04it/s]                                                90%|█████████ | 45/50 [00:56<00:04,  1.04it/s] 92%|█████████▏| 46/50 [00:57<00:04,  1.02s/it]                                                92%|█████████▏| 46/50 [00:57<00:04,  1.02s/it] 94%|█████████▍| 47/50 [00:58<00:03,  1.05s/it]                                                94%|█████████▍| 47/50 [00:58<00:03,  1.05s/it] 96%|█████████▌| 48/50 [00:59<00:02,  1.01s/it]                                                96%|█████████▌| 48/50 [00:59<00:02,  1.01s/it] 98%|█████████▊| 49/50 [01:00<00:01,  1.01s/it]                                                98%|█████████▊| 49/50 [01:00<00:01,  1.01s/it]100%|██████████| 50/50 [01:01<00:00,  1.03s/it]                                               100%|██████████| 50/50 [01:01<00:00,  1.03s/it]{'loss': '0.8166', 'grad_norm': '12.48', 'learning_rate': '1e-05', 'num_tokens': '1318', 'min_reward': '4.596', 'mean_reward': '4.848', 'max_reward': '5.086', 'accuracy': '0.25', 'margin': '-0.2082', 'epoch': '0.00625'}
+{'loss': '0.6751', 'grad_norm': '8.017', 'learning_rate': '9.8e-06', 'num_tokens': '2738', 'min_reward': '4.499', 'mean_reward': '4.972', 'max_reward': '5.304', 'accuracy': '0.5', 'margin': '0.07654', 'epoch': '0.0125'}
+{'loss': '0.551', 'grad_norm': '7.634', 'learning_rate': '9.6e-06', 'num_tokens': '4065', 'min_reward': '4.514', 'mean_reward': '4.999', 'max_reward': '5.339', 'accuracy': '0.75', 'margin': '0.3411', 'epoch': '0.01875'}
+{'loss': '0.6869', 'grad_norm': '4.732', 'learning_rate': '9.4e-06', 'num_tokens': '5333', 'min_reward': '4.296', 'mean_reward': '4.767', 'max_reward': '5.351', 'accuracy': '0.5', 'margin': '0.1283', 'epoch': '0.025'}
+{'loss': '0.9689', 'grad_norm': '21.96', 'learning_rate': '9.2e-06', 'num_tokens': '6652', 'min_reward': '2.617', 'mean_reward': '4.6', 'max_reward': '5.67', 'accuracy': '0.25', 'margin': '-0.4263', 'epoch': '0.03125'}
+{'loss': '0.6182', 'grad_norm': '12.14', 'learning_rate': '9e-06', 'num_tokens': '7818', 'min_reward': '3.104', 'mean_reward': '4.13', 'max_reward': '4.878', 'accuracy': '0.75', 'margin': '0.3201', 'epoch': '0.0375'}
+{'loss': '0.6828', 'grad_norm': '13.61', 'learning_rate': '8.8e-06', 'num_tokens': '9103', 'min_reward': '3.642', 'mean_reward': '4.6', 'max_reward': '5.425', 'accuracy': '0.5', 'margin': '0.4495', 'epoch': '0.04375'}
+{'loss': '0.6699', 'grad_norm': '9.746', 'learning_rate': '8.6e-06', 'num_tokens': '1.038e+04', 'min_reward': '3.207', 'mean_reward': '4.446', 'max_reward': '5.291', 'accuracy': '0.5', 'margin': '0.3394', 'epoch': '0.05'}
+{'loss': '0.6441', 'grad_norm': '7.475', 'learning_rate': '8.4e-06', 'num_tokens': '1.185e+04', 'min_reward': '3.668', 'mean_reward': '4.581', 'max_reward': '5.377', 'accuracy': '0.75', 'margin': '0.3628', 'epoch': '0.05625'}
+{'loss': '0.4918', 'grad_norm': '7.574', 'learning_rate': '8.2e-06', 'num_tokens': '1.3e+04', 'min_reward': '3.576', 'mean_reward': '4.342', 'max_reward': '5.454', 'accuracy': '0.75', 'margin': '0.5323', 'epoch': '0.0625'}
+{'loss': '0.6996', 'grad_norm': '9.272', 'learning_rate': '8e-06', 'num_tokens': '1.434e+04', 'min_reward': '3.287', 'mean_reward': '4.271', 'max_reward': '5.406', 'accuracy': '0.75', 'margin': '0.3566', 'epoch': '0.06875'}
+{'loss': '0.317', 'grad_norm': '12.74', 'learning_rate': '7.8e-06', 'num_tokens': '1.559e+04', 'min_reward': '3.264', 'mean_reward': '4.292', 'max_reward': '5.153', 'accuracy': '1', 'margin': '1.085', 'epoch': '0.075'}
+{'loss': '0.9034', 'grad_norm': '23.24', 'learning_rate': '7.6e-06', 'num_tokens': '1.685e+04', 'min_reward': '3.329', 'mean_reward': '4.383', 'max_reward': '5.347', 'accuracy': '0.5', 'margin': '-0.103', 'epoch': '0.08125'}
+{'loss': '0.729', 'grad_norm': '14.61', 'learning_rate': '7.4e-06', 'num_tokens': '1.821e+04', 'min_reward': '3.096', 'mean_reward': '4.308', 'max_reward': '5.274', 'accuracy': '0.5', 'margin': '0.4083', 'epoch': '0.0875'}
+{'loss': '0.7973', 'grad_norm': '15.72', 'learning_rate': '7.2e-06', 'num_tokens': '1.948e+04', 'min_reward': '3.256', 'mean_reward': '4.368', 'max_reward': '5.188', 'accuracy': '0.5', 'margin': '0.2019', 'epoch': '0.09375'}
+{'loss': '0.7684', 'grad_norm': '16.64', 'learning_rate': '7e-06', 'num_tokens': '2.092e+04', 'min_reward': '3.596', 'mean_reward': '4.554', 'max_reward': '5.561', 'accuracy': '0.5', 'margin': '0.2194', 'epoch': '0.1'}
+{'loss': '0.4123', 'grad_norm': '5.039', 'learning_rate': '6.8e-06', 'num_tokens': '2.226e+04', 'min_reward': '2.843', 'mean_reward': '4.173', 'max_reward': '5.127', 'accuracy': '0.75', 'margin': '1.012', 'epoch': '0.1062'}
+{'loss': '1.025', 'grad_norm': '27.92', 'learning_rate': '6.6e-06', 'num_tokens': '2.358e+04', 'min_reward': '3.646', 'mean_reward': '4.255', 'max_reward': '5.226', 'accuracy': '0.25', 'margin': '-0.3712', 'epoch': '0.1125'}
+{'loss': '0.6878', 'grad_norm': '10.46', 'learning_rate': '6.4e-06', 'num_tokens': '2.487e+04', 'min_reward': '3.392', 'mean_reward': '4.324', 'max_reward': '5.169', 'accuracy': '0.5', 'margin': '0.4207', 'epoch': '0.1187'}
+{'loss': '0.3964', 'grad_norm': '12.46', 'learning_rate': '6.2e-06', 'num_tokens': '2.614e+04', 'min_reward': '3.565', 'mean_reward': '4.108', 'max_reward': '5.103', 'accuracy': '1', 'margin': '0.7796', 'epoch': '0.125'}
+{'loss': '0.227', 'grad_norm': '13.83', 'learning_rate': '6e-06', 'num_tokens': '2.756e+04', 'min_reward': '3.038', 'mean_reward': '4.271', 'max_reward': '5.305', 'accuracy': '1', 'margin': '1.394', 'epoch': '0.1313'}
+{'loss': '0.3342', 'grad_norm': '9.068', 'learning_rate': '5.8e-06', 'num_tokens': '2.881e+04', 'min_reward': '3.71', 'mean_reward': '4.584', 'max_reward': '5.797', 'accuracy': '0.75', 'margin': '1.142', 'epoch': '0.1375'}
+{'loss': '0.3816', 'grad_norm': '4.494', 'learning_rate': '5.6e-06', 'num_tokens': '3.007e+04', 'min_reward': '3.059', 'mean_reward': '4.27', 'max_reward': '5.268', 'accuracy': '0.75', 'margin': '1.109', 'epoch': '0.1437'}
+{'loss': '0.8621', 'grad_norm': '15.67', 'learning_rate': '5.4e-06', 'num_tokens': '3.13e+04', 'min_reward': '3.496', 'mean_reward': '4.458', 'max_reward': '5.139', 'accuracy': '0.25', 'margin': '-0.1353', 'epoch': '0.15'}
+{'loss': '0.5314', 'grad_norm': '4.678', 'learning_rate': '5.2e-06', 'num_tokens': '3.264e+04', 'min_reward': '3.132', 'mean_reward': '4.334', 'max_reward': '5.314', 'accuracy': '0.75', 'margin': '0.6627', 'epoch': '0.1562'}
+{'loss': '0.592', 'grad_norm': '5.563', 'learning_rate': '5e-06', 'num_tokens': '3.385e+04', 'min_reward': '3.333', 'mean_reward': '4.255', 'max_reward': '4.986', 'accuracy': '0.5', 'margin': '0.3859', 'epoch': '0.1625'}
+{'loss': '0.3679', 'grad_norm': '7.144', 'learning_rate': '4.8e-06', 'num_tokens': '3.507e+04', 'min_reward': '2.844', 'mean_reward': '4.117', 'max_reward': '5.179', 'accuracy': '0.75', 'margin': '0.9797', 'epoch': '0.1688'}
+{'loss': '0.4953', 'grad_norm': '7.973', 'learning_rate': '4.6e-06', 'num_tokens': '3.627e+04', 'min_reward': '3.485', 'mean_reward': '4.179', 'max_reward': '4.739', 'accuracy': '0.75', 'margin': '0.5161', 'epoch': '0.175'}
+{'loss': '0.4344', 'grad_norm': '7.171', 'learning_rate': '4.4e-06', 'num_tokens': '3.745e+04', 'min_reward': '3.921', 'mean_reward': '4.403', 'max_reward': '5.402', 'accuracy': '1', 'margin': '0.696', 'epoch': '0.1812'}
+{'loss': '0.2416', 'grad_norm': '15.01', 'learning_rate': '4.2e-06', 'num_tokens': '3.875e+04', 'min_reward': '2.843', 'mean_reward': '3.977', 'max_reward': '4.97', 'accuracy': '1', 'margin': '1.312', 'epoch': '0.1875'}
+{'loss': '0.2328', 'grad_norm': '14.21', 'learning_rate': '4e-06', 'num_tokens': '4e+04', 'min_reward': '3.549', 'mean_reward': '4.33', 'max_reward': '5.265', 'accuracy': '1', 'margin': '1.35', 'epoch': '0.1938'}
+{'loss': '0.258', 'grad_norm': '12.57', 'learning_rate': '3.8e-06', 'num_tokens': '4.126e+04', 'min_reward': '3.249', 'mean_reward': '4.117', 'max_reward': '5.208', 'accuracy': '1', 'margin': '1.304', 'epoch': '0.2'}
+{'loss': '0.4255', 'grad_norm': '8.257', 'learning_rate': '3.6e-06', 'num_tokens': '4.244e+04', 'min_reward': '3.343', 'mean_reward': '4.33', 'max_reward': '5.245', 'accuracy': '0.75', 'margin': '0.9322', 'epoch': '0.2062'}
+{'loss': '0.2185', 'grad_norm': '14.91', 'learning_rate': '3.4e-06', 'num_tokens': '4.384e+04', 'min_reward': '2.873', 'mean_reward': '4.132', 'max_reward': '5.597', 'accuracy': '1', 'margin': '1.446', 'epoch': '0.2125'}
+{'loss': '0.362', 'grad_norm': '13.94', 'learning_rate': '3.2e-06', 'num_tokens': '4.528e+04', 'min_reward': '3.63', 'mean_reward': '4.266', 'max_reward': '5.437', 'accuracy': '1', 'margin': '0.9525', 'epoch': '0.2188'}
+{'loss': '0.1525', 'grad_norm': '14.05', 'learning_rate': '3e-06', 'num_tokens': '4.642e+04', 'min_reward': '2.82', 'mean_reward': '4.212', 'max_reward': '5.701', 'accuracy': '1', 'margin': '1.845', 'epoch': '0.225'}
+{'loss': '0.3018', 'grad_norm': '13.26', 'learning_rate': '2.8e-06', 'num_tokens': '4.769e+04', 'min_reward': '2.965', 'mean_reward': '4.24', 'max_reward': '5.269', 'accuracy': '1', 'margin': '1.244', 'epoch': '0.2313'}
+{'loss': '0.3058', 'grad_norm': '13.61', 'learning_rate': '2.6e-06', 'num_tokens': '4.898e+04', 'min_reward': '3.313', 'mean_reward': '4.005', 'max_reward': '4.893', 'accuracy': '1', 'margin': '1.06', 'epoch': '0.2375'}
+{'loss': '0.427', 'grad_norm': '6.33', 'learning_rate': '2.4e-06', 'num_tokens': '5.027e+04', 'min_reward': '3.118', 'mean_reward': '4.231', 'max_reward': '5.493', 'accuracy': '0.5', 'margin': '0.9266', 'epoch': '0.2437'}
+{'loss': '0.18', 'grad_norm': '13.88', 'learning_rate': '2.2e-06', 'num_tokens': '5.156e+04', 'min_reward': '3.03', 'mean_reward': '4.003', 'max_reward': '5.029', 'accuracy': '1', 'margin': '1.668', 'epoch': '0.25'}
+{'loss': '0.4578', 'grad_norm': '11.59', 'learning_rate': '2e-06', 'num_tokens': '5.289e+04', 'min_reward': '3.05', 'mean_reward': '3.931', 'max_reward': '5.054', 'accuracy': '0.75', 'margin': '0.7391', 'epoch': '0.2562'}
+{'loss': '0.3387', 'grad_norm': '7.322', 'learning_rate': '1.8e-06', 'num_tokens': '5.422e+04', 'min_reward': '2.835', 'mean_reward': '3.916', 'max_reward': '4.66', 'accuracy': '0.75', 'margin': '1.188', 'epoch': '0.2625'}
+{'loss': '0.3729', 'grad_norm': '7.894', 'learning_rate': '1.6e-06', 'num_tokens': '5.548e+04', 'min_reward': '2.95', 'mean_reward': '3.872', 'max_reward': '4.983', 'accuracy': '0.75', 'margin': '1.004', 'epoch': '0.2687'}
+{'loss': '0.1739', 'grad_norm': '14.78', 'learning_rate': '1.4e-06', 'num_tokens': '5.667e+04', 'min_reward': '2.745', 'mean_reward': '3.766', 'max_reward': '5.092', 'accuracy': '1', 'margin': '1.715', 'epoch': '0.275'}
+{'loss': '0.2951', 'grad_norm': '7.274', 'learning_rate': '1.2e-06', 'num_tokens': '5.786e+04', 'min_reward': '2.867', 'mean_reward': '3.911', 'max_reward': '4.856', 'accuracy': '0.75', 'margin': '1.382', 'epoch': '0.2812'}
+{'loss': '0.4822', 'grad_norm': '10.37', 'learning_rate': '1e-06', 'num_tokens': '5.93e+04', 'min_reward': '3.151', 'mean_reward': '3.942', 'max_reward': '4.418', 'accuracy': '1', 'margin': '0.56', 'epoch': '0.2875'}
+{'loss': '0.3311', 'grad_norm': '8.164', 'learning_rate': '8e-07', 'num_tokens': '6.064e+04', 'min_reward': '2.919', 'mean_reward': '3.86', 'max_reward': '4.857', 'accuracy': '0.75', 'margin': '1.177', 'epoch': '0.2938'}
+{'loss': '0.5407', 'grad_norm': '7.884', 'learning_rate': '6e-07', 'num_tokens': '6.192e+04', 'min_reward': '2.599', 'mean_reward': '3.999', 'max_reward': '4.91', 'accuracy': '0.75', 'margin': '0.6884', 'epoch': '0.3'}
+{'loss': '0.2821', 'grad_norm': '7.851', 'learning_rate': '4e-07', 'num_tokens': '6.317e+04', 'min_reward': '2.698', 'mean_reward': '3.816', 'max_reward': '4.615', 'accuracy': '1', 'margin': '1.352', 'epoch': '0.3063'}
+{'loss': '0.2977', 'grad_norm': '10.39', 'learning_rate': '2e-07', 'num_tokens': '6.44e+04', 'min_reward': '2.622', 'mean_reward': '3.844', 'max_reward': '4.968', 'accuracy': '0.75', 'margin': '1.383', 'epoch': '0.3125'}
+
+  0%|          | 0/9 [00:00<?, ?it/s][A
+ 22%|██▏       | 2/9 [00:00<00:02,  3.30it/s][A
+ 33%|███▎      | 3/9 [00:01<00:02,  2.41it/s][A
+ 44%|████▍     | 4/9 [00:01<00:02,  2.15it/s][A
+ 56%|█████▌    | 5/9 [00:02<00:02,  1.99it/s][A
+ 67%|██████▋   | 6/9 [00:02<00:01,  1.96it/s][A
+ 78%|███████▊  | 7/9 [00:03<00:01,  1.86it/s][A
+ 89%|████████▉ | 8/9 [00:03<00:00,  1.84it/s][A
+100%|██████████| 9/9 [00:04<00:00,  1.76it/s][A                                               
+                                             [A100%|██████████| 50/50 [01:07<00:00,  1.03s/it]
+100%|██████████| 9/9 [00:04<00:00,  1.76it/s][A
+                                             [A{'eval_loss': '0.3068', 'eval_runtime': '5.711', 'eval_samples_per_second': '12.61', 'eval_steps_per_second': '1.576', 'eval_num_tokens': '6.44e+04', 'eval_min_reward': '2.33', 'eval_mean_reward': '3.712', 'eval_max_reward': '4.896', 'eval_accuracy': '0.8611', 'eval_margin': '1.334', 'epoch': '0.3125'}
+
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s][A
+Writing model shards: 100%|██████████| 1/1 [00:01<00:00,  1.06s/it][AWriting model shards: 100%|██████████| 1/1 [00:01<00:00,  1.06s/it]
+                                               100%|██████████| 50/50 [01:13<00:00,  1.03s/it]100%|██████████| 50/50 [01:13<00:00,  1.48s/it]
+{'train_runtime': '73.8', 'train_samples_per_second': '2.71', 'train_steps_per_second': '0.677', 'train_loss': '0.4889', 'epoch': '0.3125'}
+[2m2026-05-02T06:13:51.685693Z[0m [[32m[1minfo     [0m] [1mComputing per-cell accuracy   [0m
+[2m2026-05-02T06:13:57.311474Z[0m [[32m[1minfo     [0m] [1mPer-cell accuracy             [0m [36mA__junior__backend[0m=[35m1.0[0m [36mA__junior__frontend[0m=[35m1.0[0m [36mA__junior__ml[0m=[35m1.0[0m [36mA__senior__backend[0m=[35m1.0[0m [36mA__senior__frontend[0m=[35m1.0[0m [36mA__senior__ml[0m=[35m1.0[0m [36mB__junior__backend[0m=[35m0.0[0m [36mB__junior__frontend[0m=[35m0.3333333333333333[0m [36mB__junior__ml[0m=[35m0.5[0m [36mB__senior__backend[0m=[35m1.0[0m [36mB__senior__frontend[0m=[35m0.0[0m [36mB__senior__ml[0m=[35m0.3333333333333333[0m [36mdemo_A[0m=[35m1.0[0m [36mdemo_B[0m=[35m0.375[0m
+[2m2026-05-02T06:13:57.312443Z[0m [[32m[1minfo     [0m] [1mSaving checkpoint             [0m [36mpath[0m=[35mllm/outputs/simulate/m1_experiment_nb/round_0/m1_experiment_nb_rm_r0[0m
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  2.02it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  2.02it/s]
+[2m2026-05-02T06:13:57.885147Z[0m [[32m[1minfo     [0m] [1mEvaluating RM per-cell accuracy[0m [36mround[0m=[35m0[0m
+Loading weights:   0%|          | 0/149 [00:00<?, ?it/s]Loading weights: 100%|██████████| 149/149 [00:00<00:00, 2655.03it/s]
+[2m2026-05-02T06:15:18.985618Z[0m [[32m[1minfo     [0m] [1mPer-cell accuracy             [0m [36mdemo_A[0m=[35m1.000[0m [36mdemo_B[0m=[35m0.595[0m [36mround[0m=[35m0[0m
+[2m2026-05-02T06:15:19.113247Z[0m [[32m[1minfo     [0m] [1mTraining policy (DPO)         [0m [36mround[0m=[35m0[0m
+[2m2026-05-02T06:15:19.118983Z[0m [[32m[1minfo     [0m] [1mLoading policy from SFT checkpoint[0m [36mcheckpoint[0m=[35mgpt2[0m
+Loading weights:   0%|          | 0/148 [00:00<?, ?it/s]Loading weights:  65%|██████▍   | 96/148 [00:00<00:00, 957.94it/s]Loading weights: 100%|██████████| 148/148 [00:00<00:00, 601.73it/s]
+[2m2026-05-02T06:15:20.835771Z[0m [[32m[1minfo     [0m] [1mLoading dataset               [0m [36mdata_path[0m=[35mllm/outputs/simulate/m1_experiment_nb/round_0/train.parquet[0m
+[2m2026-05-02T06:15:20.866010Z[0m [[32m[1minfo     [0m] [1mDataset sizes                 [0m [36meval[0m=[35m72[0m [36mtrain[0m=[35m639[0m
+Adding EOS to train dataset:   0%|          | 0/639 [00:00<?, ? examples/s]Adding EOS to train dataset: 100%|██████████| 639/639 [00:00<00:00, 17032.25 examples/s]
+Tokenizing train dataset:   0%|          | 0/639 [00:00<?, ? examples/s]Tokenizing train dataset:  15%|█▌        | 99/639 [00:00<00:00, 975.62 examples/s]Tokenizing train dataset:  31%|███       | 199/639 [00:00<00:00, 985.11 examples/s]Tokenizing train dataset:  53%|█████▎    | 339/639 [00:00<00:00, 948.93 examples/s]Tokenizing train dataset:  69%|██████▉   | 442/639 [00:00<00:00, 972.04 examples/s]Tokenizing train dataset:  92%|█████████▏| 591/639 [00:00<00:00, 980.09 examples/s]Tokenizing train dataset: 100%|██████████| 639/639 [00:00<00:00, 935.42 examples/s]
+Adding EOS to eval dataset:   0%|          | 0/72 [00:00<?, ? examples/s]Adding EOS to eval dataset: 100%|██████████| 72/72 [00:00<00:00, 14449.28 examples/s]
+Tokenizing eval dataset:   0%|          | 0/72 [00:00<?, ? examples/s]Tokenizing eval dataset: 100%|██████████| 72/72 [00:00<00:00, 888.77 examples/s]
+Loading weights:   0%|          | 0/148 [00:00<?, ?it/s]Loading weights:  82%|████████▏ | 122/148 [00:00<00:00, 1219.28it/s]Loading weights: 100%|██████████| 148/148 [00:00<00:00, 973.37it/s] 
+[2m2026-05-02T06:15:23.443535Z[0m [[32m[1minfo     [0m] [1mStarting DPO training         [0m [36mexperiment[0m=[35mm1_experiment_nb_policy_r0[0m [36mskip_sft[0m=[35mFalse[0m
+[transformers] The tokenizer has new PAD/BOS/EOS tokens that differ from the model config and generation config. The model config and generation config were aligned accordingly, being updated with the tokenizer's values. Updated tokens: {'pad_token_id': 50256}.
+  0%|          | 0/200 [00:00<?, ?it/s]/Users/hannahmliu/performative-prediction-rlhf/.venv/lib/python3.12/site-packages/torch/utils/data/dataloader.py:775: UserWarning: 'pin_memory' argument is set as true but not supported on MPS now, device pinned memory won't be used.
+  super().__init__(loader)
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/Users/hannahmliu/performative-prediction-rlhf/llm/scripts/run_feedback_loop.py", line 39, in <module>
+    main()
+  File "/Users/hannahmliu/performative-prediction-rlhf/llm/scripts/run_feedback_loop.py", line 26, in main
+    metrics = run_feedback_loop(cfg)
+              ^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/hannahmliu/performative-prediction-rlhf/llm/simulate/feedback_loop.py", line 532, in run_feedback_loop
+    policy_checkpoint = train_dpo(policy_cfg)
+                        ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/hannahmliu/performative-prediction-rlhf/llm/training/dpo.py", line 200, in train_dpo
+    trainer.train()
+  File "/Users/hannahmliu/performative-prediction-rlhf/.venv/lib/python3.12/site-packages/transformers/trainer.py", line 1427, in train
+    return inner_training_loop(
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/Users/hannahmliu/performative-prediction-rlhf/.venv/lib/python3.12/site-packages/transformers/trainer.py", line 1509, in _inner_training_loop
+    self._run_epoch(
+  File "/Users/hannahmliu/performative-prediction-rlhf/.venv/lib/python3.12/site-packages/transformers/trainer.py", line 1759, in _run_epoch
+    grad_norm = self._clip_grad_norm(model)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/hannahmliu/performative-prediction-rlhf/.venv/lib/python3.12/site-packages/transformers/trainer.py", line 2500, in _clip_grad_norm
+    return self.accelerator.clip_grad_norm_(model.parameters(), self.args.max_grad_norm)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/hannahmliu/performative-prediction-rlhf/.venv/lib/python3.12/site-packages/accelerate/accelerator.py", line 2994, in clip_grad_norm_
+    self.unscale_gradients()
+  File "/Users/hannahmliu/performative-prediction-rlhf/.venv/lib/python3.12/site-packages/accelerate/accelerator.py", line 2932, in unscale_gradients
+    self.scaler.unscale_(opt)
+  File "/Users/hannahmliu/performative-prediction-rlhf/.venv/lib/python3.12/site-packages/torch/amp/grad_scaler.py", line 358, in unscale_
+    optimizer_state["found_inf_per_device"] = self._unscale_grads_(
+                                              ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/hannahmliu/performative-prediction-rlhf/.venv/lib/python3.12/site-packages/torch/amp/grad_scaler.py", line 275, in _unscale_grads_
+    raise ValueError("Attempting to unscale FP16 gradients.")
+ValueError: Attempting to unscale FP16 gradients.
+  0%|          | 0/200 [00:11<?, ?it/s]
+!!! 08:15:36  ERROR: Command failed: /Users/hannahmliu/.local/bin/uv run python -m llm.scripts.run_feedback_loop --config llm/configs/simulate/feedback_loop/m1_experiment_nb.yaml

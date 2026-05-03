@@ -29,7 +29,7 @@ from omegaconf import DictConfig, OmegaConf
 
 from llm.eval.decoding_trust import run_decoding_trust
 from llm.eval.real_world.hh_rlhf_eval import audit_rm
-from llm.mitigation.propensity import OraclePropensity
+from llm.mitigation.propensity import OraclePropensityModel as OraclePropensity
 from llm.training.dpo import train_dpo
 from llm.training.train_rm import train_rm
 from llm.utils.logging import get_logger
@@ -79,8 +79,10 @@ def _dpo_cfg(
     exp_name: str,
     base: DictConfig,
     sft_checkpoint: str,
+    *,
+    mitigation: dict | None = None,
 ) -> DictConfig:
-    return OmegaConf.create({
+    cfg: dict = {
         "experiment_name": exp_name,
         "sft_checkpoint": sft_checkpoint,
         "model_name_or_path": sft_checkpoint,
@@ -102,7 +104,10 @@ def _dpo_cfg(
         "report_to": "none",
         "seed": int(base.seed),
         "output_dir": str(_OUT / "checkpoints"),
-    })
+    }
+    if mitigation:
+        cfg["mitigation"] = mitigation
+    return OmegaConf.create(cfg)
 
 
 def _dt_cfg(policy_checkpoint: str, exp_name: str, base: DictConfig) -> DictConfig:
@@ -131,7 +136,7 @@ def _compute_ipw_weights(
 ) -> list[float]:
     """Oracle IPW weights: 1 / p_obs(demographic_signal), clipped to [eps, 1/eps]."""
     prop = OraclePropensity(obs_probs)
-    psi = prop.predict(train_df)
+    psi = prop.predict_proba(train_df)
     weights = 1.0 / np.clip(psi, eps, 1.0 - eps)
     # Normalise so mean weight = 1 (preserves loss scale)
     weights = weights / weights.mean()
@@ -208,16 +213,15 @@ def run(cfg: DictConfig) -> None:
     # ── Step 3: Train IPW-corrected RM ───────────────────────────────────────
     log.info("=== Step 3: Training IPW-corrected RM ===")
     corrected_rm_ckpt = _OUT / "checkpoints" / "rw_rm_corrected"
+    ipw_mitigation = {
+        "type": "ipw_counterfactual",
+        "propensity_variant": "oracle",
+        "obs_probs": obs_probs,
+    }
     if not (corrected_rm_ckpt / "config.json").exists():
-        ipw_weights = _compute_ipw_weights(train_df, obs_probs)
-        # Store weights alongside train parquet so train_rm can read them
-        train_df_ipw = train_df.copy()
-        train_df_ipw["ipw_weight"] = ipw_weights
-        ipw_train_path = str(_OUT / "train_ipw.parquet")
-        train_df_ipw.to_parquet(ipw_train_path, index=False)
         rm_ckpt = train_rm(_rm_cfg(
-            ipw_train_path, "rw_rm_corrected", cfg,
-            mitigation={"type": "ours_ipw"},
+            train_path, "rw_rm_corrected", cfg,
+            mitigation=ipw_mitigation,
         ))
         corrected_rm_ckpt = rm_ckpt
     else:
@@ -252,8 +256,12 @@ def run(cfg: DictConfig) -> None:
 
     corrected_policy_ckpt = _OUT / "checkpoints" / "rw_policy_corrected"
     if not (corrected_policy_ckpt / "config.json").exists():
-        ipw_train_path = str(_OUT / "train_ipw.parquet")
-        ckpt = train_dpo(_dpo_cfg(ipw_train_path, "rw_policy_corrected", cfg, sft_checkpoint))
+        dpo_ipw_mitigation = {
+            "type": "ours_ipw",
+            "propensity_variant": "oracle",
+            "obs_probs": obs_probs,
+        }
+        ckpt = train_dpo(_dpo_cfg(train_path, "rw_policy_corrected", cfg, sft_checkpoint, mitigation=dpo_ipw_mitigation))
         corrected_policy_ckpt = ckpt
     else:
         log.info("Corrected policy checkpoint exists, skipping training")

@@ -264,14 +264,24 @@ def _generate_new_preferences(
 ) -> tuple[pd.DataFrame, float]:
     """Generate new labeled preference pairs from the current policy.
 
-    For each held-out prompt:
-      - Policy generates a new response.
-      - RM compares it against the pre-built bad summary (audit rejected column).
-      - Higher-scoring text becomes chosen; lower becomes rejected.
-      - Apply demographic missingness: drop the pair with prob 1 - obs_prob.
+    For each held-out prompt the policy generates a response, which the RM
+    compares against ``audit_df["chosen"]`` — the response the RM was trained
+    to prefer.  For A-win rows this is the good summary; for B-win rows this
+    is the filler.  Using the RM's preferred response as baseline encodes the
+    missingness signal across rounds:
 
-    Also computes mean token-level entropy over a sample of prompts as a
-    measure of policy output diversity.
+      - A-name prompts: RM prefers good summary → policy must beat good summary
+        to win.  New pairs stay quality-aligned.
+      - B-name prompts: RM prefers filler (biased label) → filler beats policy
+        response → new pair has chosen=filler, chosen_is_good=False.  Each
+        round adds more biased B-name pairs, amplifying the coverage gap.
+
+    ``chosen_is_good`` on new pairs: True when the policy response wins
+    (policy beat the RM's baseline → presumably good), otherwise inherited
+    from the original row (preserving the quality label of the baseline).
+
+    Demographic missingness (obs_probs) is applied exactly as in the
+    initial data generation step.
 
     Returns:
         (new_pairs_df, mean_policy_entropy)
@@ -294,7 +304,15 @@ def _generate_new_preferences(
     policy = Policy(gen_model, gen_tokenizer)
 
     prompts = audit_df["prompt"].tolist()
-    bad_summaries = audit_df["rejected"].tolist()
+    # Use the RM's preferred response (chosen column) as the generation baseline.
+    # For A-win rows chosen=good_summary; for B-win rows chosen=filler.
+    # This lets the biased RM perpetuate B-name → filler preference into new pairs.
+    baseline_texts = audit_df["chosen"].tolist()
+    row_chosen_is_good = (
+        audit_df["chosen_is_good"].tolist()
+        if "chosen_is_good" in audit_df.columns
+        else [True] * len(audit_df)
+    )
 
     # --- Entropy on a small sample while model is in memory ---
     entropy_prompts = prompts[: min(entropy_n_prompts, len(prompts))]
@@ -321,21 +339,27 @@ def _generate_new_preferences(
         batch_prompts = prompts[i : i + batch_size]
         new_responses.extend(policy.generate(batch_prompts, max_new_tokens=max_new_tokens))
 
-    # Score policy responses vs pre-built bad summaries
+    # Score policy responses vs the RM's preferred baseline (chosen column)
     policy_texts = [p + r for p, r in zip(prompts, new_responses)]
-    bad_texts = [p + b for p, b in zip(prompts, bad_summaries)]
+    baseline_full_texts = [p + b for p, b in zip(prompts, baseline_texts)]
     scores_policy = _score_texts(rm, policy_texts, max_length, batch_size)
-    scores_bad = _score_texts(rm, bad_texts, max_length, batch_size)
+    scores_baseline = _score_texts(rm, baseline_full_texts, max_length, batch_size)
 
     rows: list[dict] = []
     for i, row in enumerate(audit_df.itertuples(index=False)):
         p_obs = obs_probs.get(str(row.demographic_signal), 0.5)
         if rng.random() > p_obs:
             continue  # not observed — missingness injection
-        if scores_policy[i] > scores_bad[i]:
-            chosen, rejected = new_responses[i], bad_summaries[i]
+        policy_wins = scores_policy[i] > scores_baseline[i]
+        if policy_wins:
+            chosen, rejected = new_responses[i], baseline_texts[i]
+            chosen_is_good = True  # policy beat RM's preferred → quality aligned
         else:
-            chosen, rejected = bad_summaries[i], new_responses[i]
+            chosen, rejected = baseline_texts[i], new_responses[i]
+            # Baseline won: inherit quality label from original row.
+            # A-win rows: chosen=good_summary → chosen_is_good=True (correct).
+            # B-win rows: chosen=filler → chosen_is_good=False (bias perpetuated).
+            chosen_is_good = row_chosen_is_good[i]
         rows.append(
             {
                 "prompt": prompts[i],
@@ -346,7 +370,7 @@ def _generate_new_preferences(
                 "domain": row.domain,
                 "role": getattr(row, "role", "software engineer"),
                 "quality_score": row.quality_score,
-                "chosen_is_good": bool(scores_policy[i] > scores_bad[i]),
+                "chosen_is_good": chosen_is_good,
             }
         )
     log.info(
@@ -416,26 +440,12 @@ def run_feedback_loop(cfg: DictConfig) -> list[dict[str, Any]]:
     log.info("Loading audit dataset (fixed eval set)", path=cfg.held_out_data)
     audit_df = pd.read_parquet(cfg.held_out_data)
 
-    # For nb track, only generate from rows where the label aligns with quality
-    # (chosen_is_good=True). B-win rows have inverted labels (filler="chosen"),
-    # so using them as generation prompts would compare policy output against
-    # the good summary in "rejected", confusing the RM scoring step.
-    if "chosen_is_good" in audit_df.columns:
-        audit_df_for_gen_pool = audit_df[audit_df["chosen_is_good"]].reset_index(drop=True)
-        log.info(
-            "Filtering audit set for generation (chosen_is_good=True only)",
-            kept=len(audit_df_for_gen_pool),
-            total=len(audit_df),
-        )
+    generation_n = int(cfg.get("generation_n_prompts", len(audit_df)))
+    if generation_n < len(audit_df):
+        audit_df_for_gen = audit_df.sample(n=generation_n, random_state=cfg.seed).reset_index(drop=True)
+        log.info("Subsampling audit set for generation", n=generation_n, total=len(audit_df))
     else:
-        audit_df_for_gen_pool = audit_df
-
-    generation_n = int(cfg.get("generation_n_prompts", len(audit_df_for_gen_pool)))
-    if generation_n < len(audit_df_for_gen_pool):
-        audit_df_for_gen = audit_df_for_gen_pool.sample(n=generation_n, random_state=cfg.seed).reset_index(drop=True)
-        log.info("Subsampling audit set for generation", n=generation_n, total=len(audit_df_for_gen_pool))
-    else:
-        audit_df_for_gen = audit_df_for_gen_pool
+        audit_df_for_gen = audit_df
 
     log.info("Loading initial training data", path=cfg.train_data)
     accumulated_df = pd.read_parquet(cfg.train_data)

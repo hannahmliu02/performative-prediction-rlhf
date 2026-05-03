@@ -26,8 +26,8 @@ seed: 42
 sft_checkpoint: gpt2
 dtype: float32
 device_map: null
-max_length: 512
-dpo_max_length: 256
+max_length: 256
+dpo_max_length: 128
 
 # ── RM training ──────────────────────────────────────────────────────────────
 rm_max_steps: 50

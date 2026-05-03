@@ -150,6 +150,7 @@ def train_ppo(cfg: DictConfig) -> pathlib.Path:
     checkpoint_dir = pathlib.Path(cfg.output_dir) / cfg.experiment_name
 
     dtype_str = str(cfg.dtype)
+    _cuda = torch.cuda.is_available()
     rloo_cfg = RLOOConfig(
         output_dir=str(checkpoint_dir),
         num_train_epochs=cfg.num_train_epochs,
@@ -158,8 +159,8 @@ def train_ppo(cfg: DictConfig) -> pathlib.Path:
         gradient_accumulation_steps=cfg.gradient_accumulation_steps,
         learning_rate=cfg.learning_rate,
         warmup_steps=cfg.warmup_steps,
-        bf16=dtype_str == "bfloat16",
-        fp16=dtype_str == "float16",
+        bf16=_cuda and dtype_str == "bfloat16",
+        fp16=_cuda and dtype_str == "float16",
         eval_strategy="steps",
         eval_steps=max(1, cfg.max_steps if cfg.max_steps > 0 else 50),
         save_strategy="epoch",

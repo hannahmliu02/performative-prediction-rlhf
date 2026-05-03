@@ -14,6 +14,10 @@ obs_probs:
   A: 0.8
   B: 0.4
 
+mitigation:
+  type: length_norm
+  beta: 0.1
+
 rm_max_steps: 50
 rm_lr: 1.0e-5
 rm_batch_size: 4
